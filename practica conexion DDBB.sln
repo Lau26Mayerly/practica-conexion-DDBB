@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "practica conexion DDBB", "practica conexion DDBB.csproj", "{7945C270-B986-4C50-97FF-311F7B039ACF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{612FFD9D-83EB-42D5-835C-8E2ACE18467B}"
+	ProjectSection(SolutionItems) = preProject
+		Revisar_pre_fact.cs = Revisar_pre_fact.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7945C270-B986-4C50-97FF-311F7B039ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7945C270-B986-4C50-97FF-311F7B039ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7945C270-B986-4C50-97FF-311F7B039ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7945C270-B986-4C50-97FF-311F7B039ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01A8BE25-7654-4E15-96E6-08F90DC60CC7}
+	EndGlobalSection
+EndGlobal
