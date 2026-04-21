@@ -108,6 +108,9 @@ namespace practica_conexion_DDBB
                     }
                     else if (r == DialogResult.No)
                     {
+                        TXTCLIENTE.Text = "CLIENTE DE MOSTRADOR";
+                        TXT_NIT_CLIENTE.Text = "222222222222";
+
 
                     }
                 }
