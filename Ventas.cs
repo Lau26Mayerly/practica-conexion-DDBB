@@ -16,6 +16,9 @@ namespace practica_conexion_DDBB
     {
         string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
         bool cargandoDatos = false;
+        bool productoAgregado = false;
+        bool haySeleccionActiva = false;
+        Control controlOrigen = null;
         public fondo()
         {
             InitializeComponent();
@@ -24,49 +27,9 @@ namespace practica_conexion_DDBB
             listBoxProductos.Visible = false;
             TXTCODIGO.KeyDown += TXTCODIGO_KeyDown;
             TXTCODIGO.TextChanged += TXTCODIGO_TextChanged;
+            TXTCODIGO.TextChanged += TextBoxBusqueda_TextChanged;
+            TXTCATEGORIA.TextChanged += TextBoxBusqueda_TextChanged;
         }
-        //     private void BuscarNombreCliente()
-        //     {
-        //         string query =
-        //@"SELECT NOMBRE_CLIENTE
-        //  FROM CLIENTES
-        //  WHERE CC=@CC";
-
-        //         using (SqlConnection conn =
-        //         new SqlConnection(connectionString))
-        //         {
-        //             conn.Open();
-
-        //             SqlCommand cmd =
-        //             new SqlCommand(query, conn);
-
-        //             int cc;
-
-        //             if (!int.TryParse(TXTCLIENTE.Text.Trim(), out cc))
-        //             {
-        //                 MessageBox.Show("CC inválida");
-        //                 return;
-        //             }
-
-        //             cmd.Parameters.AddWithValue("@CC", cc);
-
-        //             object resultado =
-        //             cmd.ExecuteScalar();
-
-        //             if (resultado != null)
-        //             {
-        //                 TXTCLIENTE.Text =
-        //                 resultado.ToString();
-        //             }
-        //             else
-        //             {
-        //                 MessageBox.Show("Cliente no existe");
-        //             }
-
-        //         }
-
-        //     }
-
         private void BuscarNombreCliente()
         {
             int cc;
@@ -79,8 +42,8 @@ namespace practica_conexion_DDBB
             }
             string query =
             @"SELECT NOMBRE_CLIENTE
-      FROM CLIENTES
-      WHERE CC=@CC";
+               FROM CLIENTES
+                 WHERE CC=@CC";
             using (SqlConnection conn =
             new SqlConnection(connectionString))
             {
@@ -118,19 +81,7 @@ namespace practica_conexion_DDBB
             }
 
         }
-        private void BuscarPorCodigo()
-        {
-            int cod;
-            if (!int.TryParse(TXTCODIGO.Text, out cod))
-            {
-                MessageBox.Show("Código inválido");
-                return;
-            }
-            BuscarYCompletar(
-            "WHERE CODIGO=@valor",
-            cod.ToString());
 
-        }
         private void BuscarYCompletar
               (string whereSql, string valor)
         {
@@ -221,7 +172,16 @@ namespace practica_conexion_DDBB
 
         private void Ventas_Load(object sender, EventArgs e)
         {
+            DGV1.Columns.Clear();
 
+            DGV1.Columns.Add("Codigo", "Código");
+            DGV1.Columns.Add("Nombre", "Nombre");
+            DGV1.Columns.Add("Categoria", "Categoría");
+            DGV1.Columns.Add("Precio", "Precio");
+            DGV1.Columns.Add("Cantidad", "Cantidad");
+            DGV1.Columns.Add("Subtotal", "Subtotal");
+
+            DGV1.AllowUserToAddRows = false;
         }
         private void btnUsuarios_Click(object sender, EventArgs e)
         {
@@ -253,45 +213,6 @@ namespace practica_conexion_DDBB
             }
 
         }
-
-
-
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtNombre_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label10_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TXT_NIT_CLIENTE_KeyDown(object sender, KeyEventArgs e)
-        {
-
-        }
-
         private void TXT_NIT_CLIENTE_KeyDown_1(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -301,32 +222,139 @@ namespace practica_conexion_DDBB
 
         }
 
-
-        private void button1_Click(object sender, EventArgs e)
+        //BOTON AGREGAR
+        private void BTNAGREGAR_Click(object sender, EventArgs e)
         {
-            int cantidad = int.Parse(TXTCANTIDAD.Text);
-            int existencias = int.Parse(TXTSTOCK.Text);
+            //VALIDAR CLIENTE
+            if (!ClienteValido())
+            {
+                return;
+            }
+            //VALIDAR ESPACIOS VACIOS Y RETORNAR
+            if (string.IsNullOrWhiteSpace(TXTCODIGO.Text) ||
+                string.IsNullOrWhiteSpace(TXT_NOMBRE_P.Text) ||
+                string.IsNullOrWhiteSpace(TXTCATEGORIA.Text) ||
+                string.IsNullOrWhiteSpace(TXTPRECIO_P.Text))
+            {
+                MessageBox.Show("Debe seleccionar un producto válido.");
+                return;
+            }
 
-            if (cantidad > existencias)
+            //VALIDAR NUMEROS
+            int codigo, cantidad,stock;
+            decimal precio;
+
+            if (!int.TryParse(TXTCODIGO.Text, out codigo))
+            {
+                MessageBox.Show("Código inválido.");
+                return;
+            }
+
+            if (!decimal.TryParse(TXTPRECIO_P.Text, out precio))
+            {
+                MessageBox.Show("Precio inválido.");
+                return;
+            }
+
+            if (!int.TryParse(TXTCANTIDAD.Text, out cantidad))
+            {
+                MessageBox.Show("Ingrese una cantidad válida.");
+                return;
+            }
+
+            if (!int.TryParse(TXTSTOCK.Text, out stock))
+            {
+                MessageBox.Show("Stock inválido.");
+                return;
+            }
+            // VALIDAR CANTIDAD
+            if (cantidad <= 0)
+            {
+                MessageBox.Show("La cantidad debe ser mayor a 0.");
+                return;
+            }
+            if (cantidad > stock)
             {
                 MessageBox.Show("No hay suficiente stock.");
                 return;
             }
+            //  CALCULAR SUBTOTAL
+            decimal subtotal = precio * cantidad;
+            //  AGREGAR AL CARRITO TEMPORAL
+            DGV1.Rows.Add(
+                codigo,
+                TXT_NOMBRE_P.Text,
+                TXTCATEGORIA.Text,
+                precio,
+                cantidad,
+                subtotal
+            );
+            // MARCAR COMO AGREGADO
+            productoAgregado = true;
+            haySeleccionActiva = false;
+
+            //LIMPIAR PARA SIGUIENTE PRODUCTO
+            LimpiarCampos();
+            TXTCANTIDAD.Clear();
+
+            TXTCODIGO.Focus();
+        }
+        //IMPORTANTE QUE EL CLIENTE SEA VALIDADO PARA FACTURA YA SEA TIPO RECIBO O ELECTRONICA
+        private bool ClienteValido()
+        {
+            string documento = TXT_NIT_CLIENTE.Text.Trim();
+
+            if (documento == "222222222222")
+            {
+                return true;
+            }
+            if (string.IsNullOrWhiteSpace(documento))
+            {
+                MessageBox.Show("Debe ingresar CC o NIT del cliente.");
+                return false;
+            }
+            string query = "SELECT COUNT(*) FROM CLIENTES WHERE CC = @CC";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CC", documento);
+
+                int existe = (int)cmd.ExecuteScalar();
+
+                if (existe == 0)
+                {
+                    MessageBox.Show("El cliente no está registrado.");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void TXTCODIGO_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-               // BuscarPorCodigo();
             }
         }
 
         private void TXT_NOMBRE_P_TextChanged(object sender, EventArgs e)
         {
-            BuscarCoincidencias
-               ("NOMBRE_PRODUCTO",
-               TXT_NOMBRE_P.Text);
+            if (cargandoDatos) return;
+
+            Control actual = sender as Control;
+            if (haySeleccionActiva && !productoAgregado && actual != controlOrigen)
+            {
+                LimpiarCampos();
+                return;
+            }
+            BuscarCoincidencias(
+                "NOMBRE_PRODUCTO",
+                TXT_NOMBRE_P.Text
+            );
         }
 
         private void TXTCATEGORIA_TextChanged(object sender, EventArgs e)
@@ -355,17 +383,16 @@ namespace practica_conexion_DDBB
         {
             if (listBoxProductos.SelectedItem != null)
             {
-                string item =
-                listBoxProductos.SelectedItem.ToString();
+                string item = listBoxProductos.SelectedItem.ToString();
+                string codigo = item.Split('-')[0].Trim();
 
-                string codigo =
-                item.Split('-')[0].Trim();
-
-                BuscarYCompletar(
-                "WHERE CODIGO=@valor",
-                codigo);
+                BuscarYCompletar("WHERE CODIGO=@valor", codigo);
 
                 listBoxProductos.Visible = false;
+
+                haySeleccionActiva = true;
+                productoAgregado = false;
+                controlOrigen = GetControlActivo();
             }
         }
 
@@ -393,6 +420,45 @@ namespace practica_conexion_DDBB
                     TXTCANTIDAD.SelectAll(); 
                 }
             }
+        }
+
+        private void listBoxProductos_Click(object sender, EventArgs e)
+        {
+        }
+        private void TextBoxBusqueda_TextChanged(object sender, EventArgs e)
+        {
+            if (cargandoDatos) return;
+            Control actual = sender as Control;
+            if (haySeleccionActiva && !productoAgregado && actual != controlOrigen)
+            {
+                LimpiarCampos();
+            }
+        }
+        private Control GetControlActivo()
+        {
+            if (TXTCODIGO.Focused) return TXTCODIGO;
+            if (TXT_NOMBRE_P.Focused) return TXT_NOMBRE_P;
+            if (TXTCATEGORIA.Focused) return TXTCATEGORIA;
+
+            return null;
+        }
+        private void LimpiarCampos()
+        {
+            cargandoDatos = true;
+
+            TXTCODIGO.Clear();
+            TXT_NOMBRE_P.Clear();
+            TXTCATEGORIA.Clear();
+            TXTPRECIO_P.Clear();
+            TXTSTOCK.Clear();
+
+            listBoxProductos.Visible = false;
+
+            haySeleccionActiva = false;
+            productoAgregado = false;
+            controlOrigen = null;
+
+            cargandoDatos = false;
         }
     }
 }

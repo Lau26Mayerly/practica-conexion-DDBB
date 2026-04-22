@@ -80,7 +80,6 @@
             this.button3.TabIndex = 25;
             this.button3.Text = "Modificar";
             this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -92,7 +91,6 @@
             this.button2.TabIndex = 24;
             this.button2.Text = "Eliminar";
             this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -104,7 +102,7 @@
             this.button1.TabIndex = 23;
             this.button1.Text = "Agregar";
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.BTNAGREGAR_Click);
             // 
             // label4
             // 
@@ -133,7 +131,7 @@
             this.TXTCODIGO.Size = new System.Drawing.Size(204, 20);
             this.TXTCODIGO.TabIndex = 18;
             this.TXTCODIGO.TextChanged += new System.EventHandler(this.TXTCODIGO_TextChanged);
-            this.TXTCODIGO.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TXTCODIGO_KeyDown);
+           
             // 
             // label2
             // 
@@ -161,8 +159,8 @@
             this.TXT_NOMBRE_P.Name = "TXT_NOMBRE_P";
             this.TXT_NOMBRE_P.Size = new System.Drawing.Size(204, 20);
             this.TXT_NOMBRE_P.TabIndex = 15;
-            this.TXT_NOMBRE_P.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.txtNombre_MaskInputRejected);
             this.TXT_NOMBRE_P.TextChanged += new System.EventHandler(this.TXT_NOMBRE_P_TextChanged);
+         
             // 
             // DGV1
             // 
@@ -183,7 +181,6 @@
             this.label6.Size = new System.Drawing.Size(171, 60);
             this.label6.TabIndex = 26;
             this.label6.Text = "Ventas";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label5
             // 
@@ -239,8 +236,6 @@
             this.label9.Size = new System.Drawing.Size(78, 26);
             this.label9.TabIndex = 32;
             this.label9.Text = "Nit-CC";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
-            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -250,7 +245,6 @@
             this.label10.Size = new System.Drawing.Size(62, 23);
             this.label10.TabIndex = 35;
             this.label10.Text = "precio";
-            this.label10.Click += new System.EventHandler(this.label10_Click);
             // 
             // TXTPRECIO_P
             // 
@@ -291,6 +285,7 @@
             this.listBoxProductos.Name = "listBoxProductos";
             this.listBoxProductos.Size = new System.Drawing.Size(120, 95);
             this.listBoxProductos.TabIndex = 39;
+            this.listBoxProductos.Click += new System.EventHandler(this.listBoxProductos_Click);
             this.listBoxProductos.SelectedIndexChanged += new System.EventHandler(this.listBoxProductos_SelectedIndexChanged);
             this.listBoxProductos.DoubleClick += new System.EventHandler(this.listBoxProductos_DoubleClick);
             // 
@@ -301,6 +296,7 @@
             this.TXTCATEGORIA.Size = new System.Drawing.Size(204, 20);
             this.TXTCATEGORIA.TabIndex = 40;
             this.TXTCATEGORIA.TextChanged += new System.EventHandler(this.TXTCATEGORIA_TextChanged);
+         
             // 
             // fondo
             // 
