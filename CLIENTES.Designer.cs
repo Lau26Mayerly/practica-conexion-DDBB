@@ -33,6 +33,7 @@
             this.BTNELIMINAR = new System.Windows.Forms.Button();
             this.BTNCREAR = new System.Windows.Forms.Button();
             this.BTNBUSCAR = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -93,12 +94,24 @@
             this.BTNBUSCAR.UseVisualStyleBackColor = false;
             this.BTNBUSCAR.Click += new System.EventHandler(this.BTNBUSCAR_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Wingdings 3", 36F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.label2.Location = new System.Drawing.Point(12, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(69, 54);
+            this.label2.TabIndex = 18;
+            this.label2.Text = "b";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
             // CLIENTES
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.BTNBUSCAR);
             this.Controls.Add(this.BTNMODIF);
             this.Controls.Add(this.BTNELIMINAR);
@@ -119,5 +132,6 @@
         private System.Windows.Forms.Button BTNELIMINAR;
         private System.Windows.Forms.Button BTNCREAR;
         private System.Windows.Forms.Button BTNBUSCAR;
+        private System.Windows.Forms.Label label2;
     }
 }

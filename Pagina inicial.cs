@@ -15,50 +15,101 @@ namespace practica_conexion_DDBB
 {
     public partial class Form1 : Form
     {
+        private string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
         public Form1()
         {
             InitializeComponent();
 
         }
-        public static string HashPassword(string password)
+        public static class Sesion
         {
-            using (SHA256 sha256 = SHA256.Create())
+            public static string Usuario;
+            public static int Rol;
+        }
+      
+        private void INGRESAR_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(TXTUSER.Text) ||
+        string.IsNullOrWhiteSpace(TXTCLAVE.Text))
             {
-                byte[] bytes = Encoding.UTF8.GetBytes(password);
-                byte[] hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
+                MessageBox.Show("Ingrese usuario y contraseña");
+                return;
             }
 
-        }
-        string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-        private void ENCRIPTAR_Click(object sender, EventArgs e)
-        {
-            Secciones S = new Secciones();
-            S.Show();
-            this.Hide();
-            List<(int idUsuario, string clave)> usuarios = new List<(int, string)>();
+            int idUsuario;
 
-            // Leer usuarios
+            if (!int.TryParse(TXTUSER.Text, out idUsuario))
+            {
+                MessageBox.Show("El usuario debe ser un número (ID)");
+                return;
+            }
+
+            string clave = TXTCLAVE.Text;
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                SqlCommand cmd = new SqlCommand("SELECT ID_USUARIO, CLAVE FROM USUARIOS", conn);
                 conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+        SELECT NOMBRE_U, ID_ROL
+        FROM USUARIOS
+        WHERE ID_USUARIO = @id
+        AND CLAVE = @clave
+        AND ESTADO = 'ACTIVO'", conn);
+
+                cmd.Parameters.AddWithValue("@id", idUsuario);
+                cmd.Parameters.AddWithValue("@clave", clave);
+
                 SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+
+                if (reader.Read())
                 {
-                    int id = reader.GetInt32(0);
-                    string clave = reader.GetString(1);
-                    usuarios.Add((id, clave));
+                    Sesion.Usuario = reader["NOMBRE_U"].ToString();
+                    Sesion.Rol = Convert.ToInt32(reader["ID_ROL"]);
+
+                    RedirigirPorRol();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("ID o contraseña incorrectos");
                 }
             }
-    
-
-
         }
+        private void RedirigirPorRol()
+        {
+            Form frm = null;
 
+            switch (Sesion.Rol)
+            {
+                case 1:
+                    frm = new Ventas();
+                    break;
+
+                case 2:
+                    frm = new INVENTARIO();
+                    break;
+
+                case 3:
+                    frm = new FacturasRealizadas();
+                    break;
+
+                case 4:
+                    frm = new Secciones();
+                    break;
+                case 5:
+                    frm = new Secciones();
+                    break;
+                default:
+                    MessageBox.Show("Rol no autorizado");
+                    return;
+            }
+
+            frm.Show();
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            TXTCLAVE.PasswordChar = '*';
         }
     }
 }

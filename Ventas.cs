@@ -12,14 +12,14 @@ using System.Configuration;
 
 namespace practica_conexion_DDBB
 {
-    public partial class fondo : Form
+    public partial class Ventas : Form
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
         bool cargandoDatos = false;
         bool productoAgregado = false;
         bool haySeleccionActiva = false;
         Control controlOrigen = null;
-        public fondo()
+        public Ventas()
         {
             InitializeComponent();
             TXTCLIENTE.TextMaskFormat = MaskFormat.ExcludePromptAndLiterals;
@@ -217,14 +217,14 @@ namespace practica_conexion_DDBB
         private void Ventas_Load(object sender, EventArgs e)
         {
             //COLUMNAS DEL DATA GRID VIEW
-            DGV1.Columns.Clear();
-            DGV1.Columns.Add("Codigo", "Código");
-            DGV1.Columns.Add("Nombre", "Nombre");
-            DGV1.Columns.Add("Categoria", "Categoría");
-            DGV1.Columns.Add("Precio", "Precio");
-            DGV1.Columns.Add("Cantidad", "Cantidad");
-            DGV1.Columns.Add("Subtotal", "Subtotal");
-            DGV1.AllowUserToAddRows = false;
+            DGVventas.Columns.Clear();
+            DGVventas.Columns.Add("Codigo", "Código");
+            DGVventas.Columns.Add("Nombre", "Nombre");
+            DGVventas.Columns.Add("Categoria", "Categoría");
+            DGVventas.Columns.Add("Precio", "Precio");
+            DGVventas.Columns.Add("Cantidad", "Cantidad");
+            DGVventas.Columns.Add("Subtotal", "Subtotal");
+            DGVventas.AllowUserToAddRows = false;
             // BOTON EN EL DATAGRID VIEW PARA ELIMINAR
             DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
 
@@ -232,25 +232,26 @@ namespace practica_conexion_DDBB
             btn.HeaderText = "Eliminar";        // texto arriba de la columna
             btn.Text = "X";                     // lo que aparece en cada botón
             btn.UseColumnTextForButtonValue = true;
-            DGV1.Columns.Add(btn);
+            DGVventas.Columns.Add(btn);
         }
         private void btnComprar_Click(object sender, EventArgs e)
         {
             decimal total = 0;
-            foreach (DataGridViewRow fila in DGV1.Rows)
+            foreach (DataGridViewRow fila in DGVventas.Rows)
             {
                 decimal precio = Convert.ToDecimal(fila.Cells["Precio"].Value);
                 int cantidad = Convert.ToInt32(fila.Cells["Cantidad"].Value);
 
                 total += precio * cantidad;
             }
-            MessageBox.Show("Total a pagar: " + total);
+            MessageBox.Show("Total a pagar: " + total.ToString("N0"));
             //Guardar la factura en BD
-            DGV1.Rows.Clear();
+            DGVventas.Rows.Clear();
             MessageBox.Show("Venta registrada");
-        }
-    
-        private void TXT_NIT_CLIENTE_KeyDown_1(object sender, KeyEventArgs e)
+            
+            }
+
+            private void TXT_NIT_CLIENTE_KeyDown_1(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -261,9 +262,9 @@ namespace practica_conexion_DDBB
         //BOTON ELIMINAR DENTRO DEL DATA GRID VIEW FUNCIONALIDAD
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            if (DGV1.CurrentRow != null)
+            if (DGVventas.CurrentRow != null)
             {
-                DGV1.Rows.Remove(DGV1.CurrentRow);
+                DGVventas.Rows.Remove(DGVventas.CurrentRow);
             }
         }
         //BOTON AGREGAR
@@ -316,7 +317,7 @@ namespace practica_conexion_DDBB
             // CALCULAR SUBTOTAL
             decimal subtotal = precio * cantidad;
             // AGREGAR AL CARRITO
-            DGV1.Rows.Add(
+            DGVventas.Rows.Add(
                 codigo,
                 TXT_NOMBRE_P.Text,
                 TXTCATEGORIA.Text,
@@ -497,21 +498,54 @@ namespace practica_conexion_DDBB
         // ELIMINAR REGISTRO EN CASO DE QUE EL CLIENTE DESISTA DE LA COMPRA
         private void DGV1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == DGV1.Columns["Eliminar"].Index && e.RowIndex >= 0)
+            if (e.ColumnIndex == DGVventas.Columns["Eliminar"].Index && e.RowIndex >= 0)
             {
-                int cantidad = Convert.ToInt32(DGV1.Rows[e.RowIndex].Cells["Cantidad"].Value);
-                string codigo = DGV1.Rows[e.RowIndex].Cells["Codigo"].Value.ToString();
+                int cantidad = Convert.ToInt32(DGVventas.Rows[e.RowIndex].Cells["Cantidad"].Value);
+                string codigo = DGVventas.Rows[e.RowIndex].Cells["Codigo"].Value.ToString();
 
                 //DEVOLVER STOCK
                 SumarStock(codigo, cantidad);
 
                 //ELIMINAR DEL CARRITO
-                DGV1.Rows.RemoveAt(e.RowIndex);
+                DGVventas.Rows.RemoveAt(e.RowIndex);
             }
 
         }
+        //VALIDACIÓN DE FACTURAS RECIENTES
+        DataTable ObtenerVentasRecientes()
+        {
+            DataTable dt = new DataTable();
 
-      
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT TOP 10 * FROM FACTURAS ORDER BY FECHA DESC", con);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
+            }
+            return dt;
+        }
+
+        private void BTNventasRecient_Click(object sender, EventArgs e)
+        {
+            //ventas recientes
+            FacturasRealizadas frm = new FacturasRealizadas();
+            frm.Show();
+            DGVventas.Rows.Clear();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+            Secciones secciones = new Secciones();
+            secciones.Show();
+            this.Hide();
+        }
     }
 }
 

@@ -47,5 +47,12 @@ namespace practica_conexion_DDBB
             REGISTRAR_CLIENTE r = new REGISTRAR_CLIENTE();
             r.Show();
         }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            Secciones secciones = new Secciones();
+            secciones.Show();
+            this.Hide();
+        }
     }
 }

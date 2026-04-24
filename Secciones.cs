@@ -19,7 +19,7 @@ namespace practica_conexion_DDBB
 
         private void btnVentas_Click(object sender, EventArgs e)
         {
-            fondo vn = new fondo();
+            Ventas vn = new Ventas();
             vn.Show();
             this.Hide();
 
@@ -44,6 +44,21 @@ namespace practica_conexion_DDBB
             CLIENTES cl = new CLIENTES();
             cl.Show();  
             this.Hide();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            DialogResult resultado = MessageBox.Show( "¿Estás seguro de que deseas regresar?",
+                 "Confirmación",
+                  MessageBoxButtons.YesNo,
+                  MessageBoxIcon.Question);
+            if (resultado == DialogResult.Yes)
+            {
+                Form1 F= new Form1();
+                F.Show();
+                this.Close(); // O tu lógica para volver atrás
+            }
+            
         }
     }
 }

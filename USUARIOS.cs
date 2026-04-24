@@ -105,5 +105,12 @@ namespace practica_conexion_DDBB
         {
 
         }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+            Secciones secciones = new Secciones();
+            secciones.Show();
+            this.Hide();
+        }
     }
 }
