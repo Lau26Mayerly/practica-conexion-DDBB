@@ -14,7 +14,7 @@ namespace practica_conexion_DDBB
 {
     public partial class fondo : Form
     {
-        string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
+        private string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
         bool cargandoDatos = false;
         bool productoAgregado = false;
         bool haySeleccionActiva = false;
@@ -30,6 +30,50 @@ namespace practica_conexion_DDBB
             TXTCODIGO.TextChanged += TextBoxBusqueda_TextChanged;
             TXTCATEGORIA.TextChanged += TextBoxBusqueda_TextChanged;
         }
+        int ObtenerStock(string codigo)
+        {
+            int stock = 0;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT stock FROM productos WHERE codigo = @codigo", con);
+                cmd.Parameters.AddWithValue("@codigo", codigo);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    stock = Convert.ToInt32(dr["stock"]);
+                }
+            }
+
+            return stock;
+        }
+
+        void RestarStock(string codigo, int cantidad)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "UPDATE productos SET stock = stock - @cantidad WHERE codigo = @codigo", con);
+                cmd.Parameters.AddWithValue("@cantidad", cantidad);
+                cmd.Parameters.AddWithValue("@codigo", codigo);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        void SumarStock(string codigo, int cantidad)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "UPDATE productos SET stock = stock + @cantidad WHERE codigo = @codigo", con);
+                cmd.Parameters.AddWithValue("@cantidad", cantidad);
+                cmd.Parameters.AddWithValue("@codigo", codigo);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         private void BuscarNombreCliente()
         {
             int cc;
@@ -172,47 +216,40 @@ namespace practica_conexion_DDBB
 
         private void Ventas_Load(object sender, EventArgs e)
         {
+            //COLUMNAS DEL DATA GRID VIEW
             DGV1.Columns.Clear();
-
             DGV1.Columns.Add("Codigo", "Código");
             DGV1.Columns.Add("Nombre", "Nombre");
             DGV1.Columns.Add("Categoria", "Categoría");
             DGV1.Columns.Add("Precio", "Precio");
             DGV1.Columns.Add("Cantidad", "Cantidad");
             DGV1.Columns.Add("Subtotal", "Subtotal");
-
             DGV1.AllowUserToAddRows = false;
+            // BOTON EN EL DATAGRID VIEW PARA ELIMINAR
+            DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
+
+            btn.Name = "Eliminar";              // nombre interno
+            btn.HeaderText = "Eliminar";        // texto arriba de la columna
+            btn.Text = "X";                     // lo que aparece en cada botón
+            btn.UseColumnTextForButtonValue = true;
+            DGV1.Columns.Add(btn);
         }
-        private void btnUsuarios_Click(object sender, EventArgs e)
+        private void btnComprar_Click(object sender, EventArgs e)
         {
-            int codigo =
-           Convert.ToInt32
-           (TXTCODIGO.Text);
-            int cliente =
-            Convert.ToInt32
-            (TXTCLIENTE.Text);
-            int cantidad =
-            Convert.ToInt32
-            (TXTCANTIDAD.Text);
-            int vendedor = 1;
-            Ventaslogica venta = new Ventaslogica();
-            bool ok =
-            venta.RegistrarVenta
-            (
-             codigo,
-             cliente,
-             vendedor,
-             cantidad
-            );
-
-
-            if (ok)
+            decimal total = 0;
+            foreach (DataGridViewRow fila in DGV1.Rows)
             {
-                MessageBox.Show
-                ("Venta registrada");
-            }
+                decimal precio = Convert.ToDecimal(fila.Cells["Precio"].Value);
+                int cantidad = Convert.ToInt32(fila.Cells["Cantidad"].Value);
 
+                total += precio * cantidad;
+            }
+            MessageBox.Show("Total a pagar: " + total);
+            //Guardar la factura en BD
+            DGV1.Rows.Clear();
+            MessageBox.Show("Venta registrada");
         }
+    
         private void TXT_NIT_CLIENTE_KeyDown_1(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -221,66 +258,64 @@ namespace practica_conexion_DDBB
             }
 
         }
-
+        //BOTON ELIMINAR DENTRO DEL DATA GRID VIEW FUNCIONALIDAD
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (DGV1.CurrentRow != null)
+            {
+                DGV1.Rows.Remove(DGV1.CurrentRow);
+            }
+        }
         //BOTON AGREGAR
         private void BTNAGREGAR_Click(object sender, EventArgs e)
         {
-            //VALIDAR CLIENTE
+            // VALIDAR CLIENTE
             if (!ClienteValido())
-            {
                 return;
-            }
-            //VALIDAR ESPACIOS VACIOS Y RETORNAR
+            // VALIDAR CAMPOS VACÍOS
             if (string.IsNullOrWhiteSpace(TXTCODIGO.Text) ||
                 string.IsNullOrWhiteSpace(TXT_NOMBRE_P.Text) ||
                 string.IsNullOrWhiteSpace(TXTCATEGORIA.Text) ||
-                string.IsNullOrWhiteSpace(TXTPRECIO_P.Text))
+                string.IsNullOrWhiteSpace(TXTPRECIO_P.Text) ||
+                string.IsNullOrWhiteSpace(TXTCANTIDAD.Text))
             {
                 MessageBox.Show("Debe seleccionar un producto válido.");
                 return;
             }
-
-            //VALIDAR NUMEROS
-            int codigo, cantidad,stock;
+            // VARIABLES
+            string codigo = TXTCODIGO.Text;
+            int cantidad;
             decimal precio;
-
-            if (!int.TryParse(TXTCODIGO.Text, out codigo))
+            // VALIDAR DATOS
+            if (!int.TryParse(TXTCANTIDAD.Text, out cantidad))
             {
-                MessageBox.Show("Código inválido.");
+                MessageBox.Show("Cantidad inválida.");
                 return;
             }
-
             if (!decimal.TryParse(TXTPRECIO_P.Text, out precio))
             {
                 MessageBox.Show("Precio inválido.");
                 return;
             }
-
-            if (!int.TryParse(TXTCANTIDAD.Text, out cantidad))
-            {
-                MessageBox.Show("Ingrese una cantidad válida.");
-                return;
-            }
-
-            if (!int.TryParse(TXTSTOCK.Text, out stock))
-            {
-                MessageBox.Show("Stock inválido.");
-                return;
-            }
-            // VALIDAR CANTIDAD
             if (cantidad <= 0)
             {
                 MessageBox.Show("La cantidad debe ser mayor a 0.");
                 return;
             }
-            if (cantidad > stock)
+            // OBTENER STOCK REAL DESDE BD
+            int stockActual = ObtenerStock(codigo);
+
+            if (cantidad > stockActual)
             {
                 MessageBox.Show("No hay suficiente stock.");
                 return;
             }
-            //  CALCULAR SUBTOTAL
+
+            //  DESCONTAR INVENTARIO
+            RestarStock(codigo, cantidad);
+            // CALCULAR SUBTOTAL
             decimal subtotal = precio * cantidad;
-            //  AGREGAR AL CARRITO TEMPORAL
+            // AGREGAR AL CARRITO
             DGV1.Rows.Add(
                 codigo,
                 TXT_NOMBRE_P.Text,
@@ -289,18 +324,17 @@ namespace practica_conexion_DDBB
                 cantidad,
                 subtotal
             );
-            // MARCAR COMO AGREGADO
-            productoAgregado = true;
-            haySeleccionActiva = false;
 
-            //LIMPIAR PARA SIGUIENTE PRODUCTO
+            // LIMPIAR CAMPOS
             LimpiarCampos();
             TXTCANTIDAD.Clear();
-
             TXTCODIGO.Focus();
+
+            productoAgregado = true;
+            haySeleccionActiva = false;
+            //IMPORTANTE QUE EL CLIENTE SEA VALIDADO PARA FACTURA YA SEA TIPO RECIBO O ELECTRONICA
         }
-        //IMPORTANTE QUE EL CLIENTE SEA VALIDADO PARA FACTURA YA SEA TIPO RECIBO O ELECTRONICA
-        private bool ClienteValido()
+            private bool ClienteValido()
         {
             string documento = TXT_NIT_CLIENTE.Text.Trim();
 
@@ -460,6 +494,24 @@ namespace practica_conexion_DDBB
 
             cargandoDatos = false;
         }
+        // ELIMINAR REGISTRO EN CASO DE QUE EL CLIENTE DESISTA DE LA COMPRA
+        private void DGV1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == DGV1.Columns["Eliminar"].Index && e.RowIndex >= 0)
+            {
+                int cantidad = Convert.ToInt32(DGV1.Rows[e.RowIndex].Cells["Cantidad"].Value);
+                string codigo = DGV1.Rows[e.RowIndex].Cells["Codigo"].Value.ToString();
+
+                //DEVOLVER STOCK
+                SumarStock(codigo, cantidad);
+
+                //ELIMINAR DEL CARRITO
+                DGV1.Rows.RemoveAt(e.RowIndex);
+            }
+
+        }
+
+      
     }
 }
 

@@ -172,6 +172,7 @@
             this.Controls.Add(this.CMB_Tipo);
             this.Controls.Add(this.BTNGUARDAR);
             this.Name = "REGISTRAR_CLIENTE";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "REGISTRAR_CLIENTE";
             this.ResumeLayout(false);
             this.PerformLayout();

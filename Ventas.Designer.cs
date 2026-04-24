@@ -66,9 +66,9 @@
             this.btnFINALIZAR.Size = new System.Drawing.Size(159, 61);
             this.btnFINALIZAR.TabIndex = 4;
             this.btnFINALIZAR.TabStop = false;
-            this.btnFINALIZAR.Text = "Finalizar";
+            this.btnFINALIZAR.Text = "Comprar";
             this.btnFINALIZAR.UseVisualStyleBackColor = false;
-            this.btnFINALIZAR.Click += new System.EventHandler(this.btnUsuarios_Click);
+            this.btnFINALIZAR.Click += new System.EventHandler(this.btnComprar_Click);
             // 
             // button3
             // 
@@ -131,7 +131,6 @@
             this.TXTCODIGO.Size = new System.Drawing.Size(204, 20);
             this.TXTCODIGO.TabIndex = 18;
             this.TXTCODIGO.TextChanged += new System.EventHandler(this.TXTCODIGO_TextChanged);
-           
             // 
             // label2
             // 
@@ -160,23 +159,23 @@
             this.TXT_NOMBRE_P.Size = new System.Drawing.Size(204, 20);
             this.TXT_NOMBRE_P.TabIndex = 15;
             this.TXT_NOMBRE_P.TextChanged += new System.EventHandler(this.TXT_NOMBRE_P_TextChanged);
-         
             // 
             // DGV1
             // 
             this.DGV1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.DGV1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DGV1.Location = new System.Drawing.Point(514, 55);
+            this.DGV1.Location = new System.Drawing.Point(497, 55);
             this.DGV1.Name = "DGV1";
-            this.DGV1.Size = new System.Drawing.Size(408, 252);
+            this.DGV1.Size = new System.Drawing.Size(584, 252);
             this.DGV1.TabIndex = 14;
+            this.DGV1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV1_CellClick);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Ink Free", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label6.Location = new System.Drawing.Point(406, -18);
+            this.label6.Location = new System.Drawing.Point(361, -5);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(171, 60);
             this.label6.TabIndex = 26;
@@ -236,6 +235,7 @@
             this.label9.Size = new System.Drawing.Size(78, 26);
             this.label9.TabIndex = 32;
             this.label9.Text = "Nit-CC";
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -296,7 +296,6 @@
             this.TXTCATEGORIA.Size = new System.Drawing.Size(204, 20);
             this.TXTCATEGORIA.TabIndex = 40;
             this.TXTCATEGORIA.TextChanged += new System.EventHandler(this.TXTCATEGORIA_TextChanged);
-         
             // 
             // fondo
             // 
@@ -329,6 +328,7 @@
             this.Controls.Add(this.DGV1);
             this.Controls.Add(this.btnFINALIZAR);
             this.Name = "fondo";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ventas";
             this.Load += new System.EventHandler(this.Ventas_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DGV1)).EndInit();
