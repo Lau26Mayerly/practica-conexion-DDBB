@@ -23,7 +23,7 @@ namespace practica_conexion_DDBB
         private void BTNGUARDAR_Click(object sender, EventArgs e)
         {
             string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-            using (SqlConnection conn = new SqlConnection(cad_con))
+            using (MySqlConnection conn = new MySqlConnection(cad_con))
             {
                 conn.Open();
 
@@ -32,7 +32,7 @@ namespace practica_conexion_DDBB
                   VALUES
                   (@CC, @NOMBRE_CLIENTE, @TELEFONO, @DIRECCION)";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@CC", TXT_CC.Text);
                 cmd.Parameters.AddWithValue("@NOMBRE_CLIENTE", TXT_Nombre.Text);

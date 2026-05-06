@@ -25,9 +25,9 @@ namespace practica_conexion_DDBB
             string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
 
             string consulta = "select * from USUARIOS";
-            using (SqlConnection con = new SqlConnection(cad_con))
+            using (MySqlConnection con = new MySqlConnection(cad_con))
             {
-                SqlDataAdapter ad = new SqlDataAdapter(consulta, con);
+                MyMySqlDataAdapter ad = new MyMySqlDataAdapter(consulta, con);
                 DataTable tab_User = new DataTable();
                 ad.Fill(tab_User);
                 DGVuser.DataSource = tab_User;
@@ -42,15 +42,15 @@ namespace practica_conexion_DDBB
         {
 
             string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-            using (SqlConnection conn = new SqlConnection(cad_con))
+            using (MySqlConnection conn = new MySqlConnection(cad_con))
             {
                 string query = "select ID_USUARIO, NOMBRE_U, ID_ROL, CLAVE, ESTADO" +
                     "from USUARIOS" +
                     " WHERE  CAST(ID_USUARIO AS NVARCHAR) LIKE @filtro";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue(@"filtro","%"+filtro+"%");
-                    SqlDataAdapter d = new SqlDataAdapter(cmd);
+                    MyMySqlDataAdapter d = new MyMySqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     d.Fill(dt);
                     DGVuser.DataSource = dt;
@@ -62,15 +62,15 @@ namespace practica_conexion_DDBB
         //{
 
         //    string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-        //    using (SqlConnection conn = new SqlConnection(cad_con))
+        //    using (MySqlConnection conn = new MySqlConnection(cad_con))
         //    {
         //        string query = "select ID_USUARIO, NOMBRE_U, ID_ROL, CLAVE, ESTADO" +
         //            "from USUARIOS" +
         //            " WHERE  NOMBRE_U = @filtro";
-        //        using (SqlCommand cmd = new SqlCommand(query, conn))
+        //        using (MySqlCommand cmd = new MySqlCommand(query, conn))
         //        {
         //            cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
-        //            SqlDataAdapter d = new SqlDataAdapter(cmd);
+        //            MyMySqlDataAdapter d = new MyMySqlDataAdapter(cmd);
         //            DataTable dt = new DataTable();
         //            d.Fill(dt);
         //            DGVuser.DataSource = dt;

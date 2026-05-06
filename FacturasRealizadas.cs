@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
@@ -28,23 +29,34 @@ namespace practica_conexion_DDBB
         }
         DataTable ObtenerVentasRecientes()
         {
-
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                con.Open();
+                using (MySqlConnection con = new MySqlConnection(connectionString))
+                {
+                    con.Open();
 
-                SqlCommand cmd = new SqlCommand(
-                    "SELECT * FROM FACTURAS ORDER BY FECHA DESC", con);
+                    // Consulta para obtener las facturas más recientes
+                    string query = "SELECT * FROM FACTURAS ORDER BY FECHA DESC";
 
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
+                    using (MySqlCommand cmd = new MySqlCommand(query, con))
+                    {
+                        // CORRECCIÓN: El nombre correcto es MySqlDataAdapter
+                        using (MySqlDataAdapter da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al obtener ventas: " + ex.Message);
             }
 
             return dt;
         }
-
         private void FacturasRealizadas_Load(object sender, EventArgs e)
         {
             DGVfacturas.DataSource = ObtenerVentasRecientes();

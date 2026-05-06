@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Configuration;
+using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
@@ -33,28 +34,40 @@ namespace practica_conexion_DDBB
         int ObtenerStock(string codigo)
         {
             int stock = 0;
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                con.Open();
-                SqlCommand cmd = new SqlCommand(
-                    "SELECT stock FROM productos WHERE codigo = @codigo", con);
-                cmd.Parameters.AddWithValue("@codigo", codigo);
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
+                using (MySqlConnection con = new MySqlConnection(connectionString))
                 {
-                    stock = Convert.ToInt32(dr["stock"]);
+                    con.Open();
+                    // Usamos ExecuteScalar porque solo queremos un dato (el stock)
+                    string query = "SELECT stock FROM productos WHERE codigo = @codigo";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@codigo", codigo);
+
+                        object resultado = cmd.ExecuteScalar();
+
+                        if (resultado != null && resultado != DBNull.Value)
+                        {
+                            stock = Convert.ToInt32(resultado);
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al obtener stock: " + ex.Message);
             }
 
             return stock;
         }
-
         void RestarStock(string codigo, int cantidad)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (MySqlConnection con = new MySqlConnection(connectionString))
             {
                 con.Open();
-                SqlCommand cmd = new SqlCommand(
+                MySqlCommand cmd = new MySqlCommand(
                     "UPDATE productos SET stock = stock - @cantidad WHERE codigo = @codigo", con);
                 cmd.Parameters.AddWithValue("@cantidad", cantidad);
                 cmd.Parameters.AddWithValue("@codigo", codigo);
@@ -63,10 +76,10 @@ namespace practica_conexion_DDBB
         }
         void SumarStock(string codigo, int cantidad)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (MySqlConnection con = new MySqlConnection(connectionString))
             {
                 con.Open();
-                SqlCommand cmd = new SqlCommand(
+                MySqlCommand cmd = new MySqlCommand(
                     "UPDATE productos SET stock = stock + @cantidad WHERE codigo = @codigo", con);
                 cmd.Parameters.AddWithValue("@cantidad", cantidad);
                 cmd.Parameters.AddWithValue("@codigo", codigo);
@@ -88,11 +101,11 @@ namespace practica_conexion_DDBB
             @"SELECT NOMBRE_CLIENTE
                FROM CLIENTES
                  WHERE CC=@CC";
-            using (SqlConnection conn =
-            new SqlConnection(connectionString))
+            using (MySqlConnection conn =
+            new MySqlConnection(connectionString))
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand(query, conn);
+                MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@CC", cc);
                 object resultado =
                 cmd.ExecuteScalar();
@@ -125,95 +138,102 @@ namespace practica_conexion_DDBB
             }
 
         }
-
-        private void BuscarYCompletar
-              (string whereSql, string valor)
+        private void BuscarYCompletar(string whereSql, string valor)
         {
-            string query = $@"
+            // El whereSql debe contener la cláusula (ej: "WHERE CODIGO = @valor")
+            string query = $@"SELECT CODIGO, NOMBRE_PRODUCTO, CATEGORIA, PRECIO, STOCK FROM PRODUCTOS {whereSql}";
 
-              SELECT CODIGO,  NOMBRE_PRODUCTO, CATEGORIA, PRECIO,STOCK FROM PRODUCTOS {whereSql}";
-
-
-            using (SqlConnection conn =
-            new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-
-                SqlCommand cmd =
-                new SqlCommand(query, conn);
-
-                cmd.Parameters.AddWithValue
-                ("@valor", valor);
-
-                SqlDataReader reader =
-                cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    TXTCODIGO.Text =
-                    reader["CODIGO"].ToString();
+                    conn.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        // Pasamos el valor al parámetro @valor que debe estar en el whereSql
+                        cmd.Parameters.AddWithValue("@valor", valor);
 
-                    TXT_NOMBRE_P.Text =
-                    reader["NOMBRE_PRODUCTO"].ToString();
-
-                    TXTCATEGORIA.Text = reader["CATEGORIA"].ToString();
-
-                    TXTPRECIO_P.Text =
-                    reader["PRECIO"].ToString();
-
-                    TXTSTOCK.Text =
-                    reader["STOCK"].ToString();
+                        // CORRECCIÓN: Usar MySqlDataReader
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                TXTCODIGO.Text = reader["CODIGO"].ToString();
+                                TXT_NOMBRE_P.Text = reader["NOMBRE_PRODUCTO"].ToString();
+                                TXTCATEGORIA.Text = reader["CATEGORIA"].ToString();
+                                TXTPRECIO_P.Text = reader["PRECIO"].ToString();
+                                TXTSTOCK.Text = reader["STOCK"].ToString();
+                            }
+                            else
+                            {
+                                // Opcional: Limpiar campos si no encuentra nada
+                                LimpiarCampos();
+                            }
+                        }
+                    }
                 }
-
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al buscar producto: " + ex.Message);
+            }
         }
+
         private void BuscarCoincidencias(string campo, string valor)
         {
             string query;
 
             if (campo == "CODIGO")
             {
+                // En MySQL se usa CHAR en lugar de VARCHAR para el CAST
                 query = @"
-        SELECT CODIGO, NOMBRE_PRODUCTO
-        FROM PRODUCTOS
-        WHERE CAST(CODIGO AS VARCHAR) LIKE @valor";
+            SELECT CODIGO, NOMBRE_PRODUCTO
+            FROM PRODUCTOS
+            WHERE CAST(CODIGO AS CHAR) LIKE @valor";
             }
             else
             {
+                // Nota: Asegúrate de que 'campo' no venga de un input directo del usuario para evitar SQL Injection
                 query = $@"
-        SELECT CODIGO, NOMBRE_PRODUCTO
-        FROM PRODUCTOS
-        WHERE {campo} LIKE @valor";
+            SELECT CODIGO, NOMBRE_PRODUCTO
+            FROM PRODUCTOS
+            WHERE {campo} LIKE @valor";
             }
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-
-                cmd.Parameters.AddWithValue("@valor", "%" + valor + "%");
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                List<string> lista = new List<string>();
-
-                while (reader.Read())
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    lista.Add(
-                        reader["CODIGO"].ToString()
-                        + " - " +
-                        reader["NOMBRE_PRODUCTO"].ToString()
-                    );
+                    conn.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@valor", "%" + valor + "%");
+
+                        // CORRECCIÓN: MySqlDataReader en lugar de SqlDataReader
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            List<string> lista = new List<string>();
+
+                            while (reader.Read())
+                            {
+                                lista.Add(
+                                    reader["CODIGO"].ToString()
+                                    + " - " +
+                                    reader["NOMBRE_PRODUCTO"].ToString()
+                                );
+                            }
+
+                            listBoxProductos.DataSource = lista;
+                            listBoxProductos.Visible = lista.Count > 0;
+                        }
+                    }
                 }
-
-                listBoxProductos.DataSource = lista;
-                listBoxProductos.Visible = lista.Count > 0;
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en la búsqueda: " + ex.Message);
+            }
         }
-
         private void Ventas_Load(object sender, EventArgs e)
         {
             //COLUMNAS DEL DATA GRID VIEW
@@ -335,39 +355,52 @@ namespace practica_conexion_DDBB
             haySeleccionActiva = false;
             //IMPORTANTE QUE EL CLIENTE SEA VALIDADO PARA FACTURA YA SEA TIPO RECIBO O ELECTRONICA
         }
-            private bool ClienteValido()
+        private bool ValidarCliente() // Asumo que es el nombre de tu método
         {
             string documento = TXT_NIT_CLIENTE.Text.Trim();
 
+            // 1. Validación rápida
             if (documento == "222222222222")
             {
                 return true;
             }
+
             if (string.IsNullOrWhiteSpace(documento))
             {
                 MessageBox.Show("Debe ingresar CC o NIT del cliente.");
                 return false;
             }
+
             string query = "SELECT COUNT(*) FROM CLIENTES WHERE CC = @CC";
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@CC", documento);
-
-                int existe = (int)cmd.ExecuteScalar();
-
-                if (existe == 0)
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    MessageBox.Show("El cliente no está registrado.");
-                    return false;
-                }
-            }
+                    conn.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CC", documento);
 
-            return true;
+                        // CORRECCIÓN: Convert.ToInt32 para evitar errores entre Int64 e Int32
+                        int existe = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        if (existe == 0)
+                        {
+                            MessageBox.Show("El cliente no está registrado.");
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al validar cliente: " + ex.Message);
+                return false;
+            }
         }
+
 
         private void TXTCODIGO_KeyDown(object sender, KeyEventArgs e)
         {
@@ -516,12 +549,12 @@ namespace practica_conexion_DDBB
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (MySqlConnection con = new MySqlConnection(connectionString))
             {
                 con.Open();
-                SqlCommand cmd = new SqlCommand(
+                MySqlCommand cmd = new MySqlCommand(
                     "SELECT TOP 10 * FROM FACTURAS ORDER BY FECHA DESC", con);
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 da.Fill(dt);
             }
             return dt;

@@ -46,11 +46,11 @@ namespace practica_conexion_DDBB
 
             string clave = TXTCLAVE.Text;
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand(@"
+                MySqlCommand cmd = new MySqlCommand(@"
         SELECT NOMBRE_U, ID_ROL
         FROM USUARIOS
         WHERE ID_USUARIO = @id

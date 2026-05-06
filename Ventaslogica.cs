@@ -22,8 +22,8 @@ namespace practica_conexion_DDBB
             int vendedor,
             int cantidad)
         {
-            using (SqlConnection conn =
-                new SqlConnection(connectionString))
+            using (MySqlConnection conn =
+                new MySqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -41,8 +41,8 @@ namespace practica_conexion_DDBB
                       FROM PRODUCTOS
                       WHERE CODIGO=@CODIGO";
 
-                    SqlCommand cmdBuscar =
-                    new SqlCommand
+                    MySqlCommand cmdBuscar =
+                    new MySqlCommand
                     (sqlBuscar, conn, tran);
 
                     cmdBuscar.Parameters.AddWithValue
@@ -90,8 +90,8 @@ namespace practica_conexion_DDBB
                       @VENDEDOR
                     )";
 
-                    SqlCommand cmdFactura =
-                    new SqlCommand
+                    MySqlCommand cmdFactura =
+                    new MySqlCommand
                     (sqlFactura, conn, tran);
 
                     cmdFactura.Parameters.AddWithValue
@@ -123,8 +123,8 @@ namespace practica_conexion_DDBB
                     SET STOCK=STOCK-@CANTIDAD
                     WHERE CODIGO=@CODIGO";
 
-                    SqlCommand cmdStock =
-                    new SqlCommand
+                    MySqlCommand cmdStock =
+                    new MySqlCommand
                     (sqlStock, conn, tran);
 
                     cmdStock.Parameters.AddWithValue
@@ -157,8 +157,8 @@ namespace practica_conexion_DDBB
                      'VENTA'
                     )";
 
-                    SqlCommand cmdRot =
-                    new SqlCommand
+                    MySqlCommand cmdRot =
+                    new MySqlCommand
                     (sqlRotacion, conn, tran);
 
                     cmdRot.Parameters.AddWithValue
