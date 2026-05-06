@@ -147,7 +147,6 @@
     <Compile Include="Secciones.Designer.cs">
       <DependentUpon>Secciones.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsuarioIngreso.cs" />
     <Compile Include="USUARIOS.cs">
       <SubType>Form</SubType>
     </Compile>
