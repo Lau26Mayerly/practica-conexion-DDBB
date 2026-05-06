@@ -15,7 +15,6 @@ namespace practica_conexion_DDBB
 {
     public partial class REGISTRAR_CLIENTE : Form
     {
-        bool cargandoDatos = false;
         public REGISTRAR_CLIENTE()
         {
             InitializeComponent();

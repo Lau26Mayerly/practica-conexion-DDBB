@@ -24,8 +24,9 @@ namespace practica_conexion_DDBB
         }
         public static class Sesion
         {
-            public static string Usuario;
-            public static int Rol;
+            public static int IdUsuario { get; set; }
+            public static string Usuario { get; set; }
+            public static int Rol { get; set; }
         }
         private void INGRESAR_Click(object sender, EventArgs e)
         {
@@ -66,6 +67,7 @@ namespace practica_conexion_DDBB
                     {
                         if (reader.Read())
                         {
+                            Sesion.IdUsuario = idUsuario;
                             Sesion.Usuario = reader["NOMBRE_U"].ToString();
                             Sesion.Rol = Convert.ToInt32(reader["ID_ROL"]);
 

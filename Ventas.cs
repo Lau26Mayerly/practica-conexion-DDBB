@@ -10,11 +10,13 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Configuration;
 using MySql.Data.MySqlClient;
+using static practica_conexion_DDBB.Form1;
 
 namespace practica_conexion_DDBB
 {
     public partial class Ventas : Form
     {
+        bool cargandoCliente = false;
         private string connectionString = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
         bool cargandoDatos = false;
         bool productoAgregado = false;
@@ -30,6 +32,9 @@ namespace practica_conexion_DDBB
             TXTCODIGO.TextChanged += TXTCODIGO_TextChanged;
             TXTCODIGO.TextChanged += TextBoxBusqueda_TextChanged;
             TXTCATEGORIA.TextChanged += TextBoxBusqueda_TextChanged;
+
+            // 🔥 ESTA LÍNEA ES LA QUE TE FALTA
+            TXT_NIT_CLIENTE.KeyDown += TXT_NIT_CLIENTE_KeyDown;
         }
         int ObtenerStock(string codigo)
         {
@@ -86,33 +91,36 @@ namespace practica_conexion_DDBB
                 cmd.ExecuteNonQuery();
             }
         }
-
         private void BuscarNombreCliente()
         {
-            int cc;
+            if (cargandoCliente) return; // 🔥 evita ejecución duplicada
 
-            if (!int.TryParse
-            (TXT_NIT_CLIENTE.Text, out cc))
+            int cc;
+            if (TXT_NIT_CLIENTE.Text == "222222222222")
+            {
+                TXTCLIENTE.Text = "CLIENTE DE MOSTRADOR";
+                return;
+            }
+
+            if (!int.TryParse(TXT_NIT_CLIENTE.Text, out cc))
             {
                 MessageBox.Show("CC inválida");
                 return;
             }
-            string query =
-            @"SELECT NOMBRE_CLIENTE
-               FROM CLIENTES
-                 WHERE CC=@CC";
-            using (MySqlConnection conn =
-            new MySqlConnection(connectionString))
+
+            string query = @"SELECT NOMBRE_CLIENTE FROM CLIENTES WHERE CC=@CC";
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@CC", cc);
-                object resultado =
-                cmd.ExecuteScalar();
+
+                object resultado = cmd.ExecuteScalar();
+
                 if (resultado != null)
                 {
-                    TXTCLIENTE.Text =
-                    resultado.ToString();
+                    TXTCLIENTE.Text = resultado.ToString();
                 }
                 else
                 {
@@ -126,17 +134,18 @@ namespace practica_conexion_DDBB
                         CLIENTES frm = new CLIENTES();
                         frm.ShowDialog();
                     }
-                    else if (r == DialogResult.No)
+                    else
                     {
+                        cargandoCliente = true;
+
                         TXTCLIENTE.Text = "CLIENTE DE MOSTRADOR";
                         TXT_NIT_CLIENTE.Text = "222222222222";
 
-
+                        cargandoCliente = false;
+                        return;
                     }
                 }
-
             }
-
         }
         private void BuscarYCompletar(string whereSql, string valor)
         {
@@ -256,38 +265,74 @@ namespace practica_conexion_DDBB
         }
         private void btnComprar_Click(object sender, EventArgs e)
         {
-            decimal total = 0;
+            if (!ValidarCliente()) return;
+
+            if (DGVventas.Rows.Count == 0)
+            {
+                MessageBox.Show("No hay productos en la venta.");
+                return;
+            }
+
+            decimal subtotal = 0;
+
             foreach (DataGridViewRow fila in DGVventas.Rows)
             {
-                decimal precio = Convert.ToDecimal(fila.Cells["Precio"].Value);
-                int cantidad = Convert.ToInt32(fila.Cells["Cantidad"].Value);
-
-                total += precio * cantidad;
-            }
-            MessageBox.Show("Total a pagar: " + total.ToString("N0"));
-            //Guardar la factura en BD
-            DGVventas.Rows.Clear();
-            MessageBox.Show("Venta registrada");
-            
+                subtotal += Convert.ToDecimal(fila.Cells["Subtotal"].Value);
             }
 
-            private void TXT_NIT_CLIENTE_KeyDown_1(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
+            decimal iva = subtotal * 0.19m;
+            decimal total = subtotal + iva;
+
+            long cliente = long.Parse(TXT_NIT_CLIENTE.Text);
+            int vendedor = Sesion.IdUsuario;
+
+            List<string> codigos = new List<string>();
+
+            foreach (DataGridViewRow fila in DGVventas.Rows)
             {
-                BuscarNombreCliente();
+                if (fila.Cells["Codigo"].Value != null)
+                {
+                    codigos.Add(fila.Cells["Codigo"].Value.ToString());
+                }
             }
 
-        }
-        //BOTON ELIMINAR DENTRO DEL DATA GRID VIEW FUNCIONALIDAD
-        private void btnEliminar_Click(object sender, EventArgs e)
-        {
-            if (DGVventas.CurrentRow != null)
+            string detalle = string.Join(",", codigos);
+
+            try
             {
-                DGVventas.Rows.Remove(DGVventas.CurrentRow);
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string query = @"
+            INSERT INTO FACTURAS
+            (FECHA, SUBTOTAL, IVA, VALOR, DETALLE, CLIENTE, VENDEDOR)
+            VALUES
+            (NOW(), @SUBTOTAL, @IVA, @TOTAL, @DETALLE, @CLIENTE, @VENDEDOR)";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    cmd.Parameters.AddWithValue("@SUBTOTAL", subtotal);
+                    cmd.Parameters.AddWithValue("@IVA", iva);
+                    cmd.Parameters.AddWithValue("@TOTAL", total);
+                    cmd.Parameters.AddWithValue("@DETALLE", detalle);
+                    cmd.Parameters.AddWithValue("@CLIENTE", cliente);
+                    cmd.Parameters.AddWithValue("@VENDEDOR", vendedor);
+
+                    int filas = cmd.ExecuteNonQuery();
+
+                    if (filas > 0)
+                    {
+                        MessageBox.Show("Venta registrada correctamente");
+                        DGVventas.Rows.Clear();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
-        //BOTON AGREGAR
         private void BTNAGREGAR_Click(object sender, EventArgs e)
         {
             // VALIDAR CLIENTE
@@ -578,6 +623,14 @@ namespace practica_conexion_DDBB
             Secciones secciones = new Secciones();
             secciones.Show();
             this.Hide();
+        }
+
+        private void TXT_NIT_CLIENTE_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                BuscarNombreCliente();
+            }
         }
     }
 }

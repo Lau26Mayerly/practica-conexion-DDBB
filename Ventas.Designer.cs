@@ -254,7 +254,7 @@
             this.TXT_NIT_CLIENTE.Name = "TXT_NIT_CLIENTE";
             this.TXT_NIT_CLIENTE.Size = new System.Drawing.Size(204, 20);
             this.TXT_NIT_CLIENTE.TabIndex = 38;
-            this.TXT_NIT_CLIENTE.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TXT_NIT_CLIENTE_KeyDown_1);
+            this.TXT_NIT_CLIENTE.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TXT_NIT_CLIENTE_KeyDown);
             // 
             // listBoxProductos
             // 
