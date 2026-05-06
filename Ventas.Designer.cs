@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btnFINALIZAR = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -71,22 +70,11 @@
             this.btnFINALIZAR.UseVisualStyleBackColor = false;
             this.btnFINALIZAR.Click += new System.EventHandler(this.btnComprar_Click);
             // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.Color.YellowGreen;
-            this.button3.Font = new System.Drawing.Font("Ink Free", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(239, 410);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(102, 42);
-            this.button3.TabIndex = 25;
-            this.button3.Text = "Modificar";
-            this.button3.UseVisualStyleBackColor = false;
-            // 
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.YellowGreen;
             this.button1.Font = new System.Drawing.Font("Ink Free", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(67, 410);
+            this.button1.Location = new System.Drawing.Point(131, 421);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(102, 42);
             this.button1.TabIndex = 23;
@@ -332,7 +320,6 @@
             this.Controls.Add(this.TXTCANTIDAD);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -355,7 +342,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnFINALIZAR;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;

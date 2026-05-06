@@ -291,7 +291,7 @@ namespace practica_conexion_DDBB
         private void BTNAGREGAR_Click(object sender, EventArgs e)
         {
             // VALIDAR CLIENTE
-            if (!ClienteValido())
+            if (!ValidarCliente())
                 return;
             // VALIDAR CAMPOS VACÍOS
             if (string.IsNullOrWhiteSpace(TXTCODIGO.Text) ||

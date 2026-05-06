@@ -161,9 +161,9 @@
             // 
             this.BTNinhab.BackColor = System.Drawing.Color.YellowGreen;
             this.BTNinhab.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BTNinhab.Location = new System.Drawing.Point(351, 367);
+            this.BTNinhab.Location = new System.Drawing.Point(323, 367);
             this.BTNinhab.Name = "BTNinhab";
-            this.BTNinhab.Size = new System.Drawing.Size(116, 42);
+            this.BTNinhab.Size = new System.Drawing.Size(138, 42);
             this.BTNinhab.TabIndex = 12;
             this.BTNinhab.Text = "Inhabilitar";
             this.BTNinhab.UseVisualStyleBackColor = false;
@@ -201,6 +201,7 @@
             this.BTNhabili.TabIndex = 20;
             this.BTNhabili.Text = "Habilitar";
             this.BTNhabili.UseVisualStyleBackColor = false;
+            this.BTNhabili.Click += new System.EventHandler(this.BTNhabili_Click);
             // 
             // INVENTARIO
             // 

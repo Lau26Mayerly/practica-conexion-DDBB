@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
@@ -26,11 +27,10 @@ namespace practica_conexion_DDBB
             public static string Usuario;
             public static int Rol;
         }
-      
         private void INGRESAR_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TXTUSER.Text) ||
-        string.IsNullOrWhiteSpace(TXTCLAVE.Text))
+                string.IsNullOrWhiteSpace(TXTCLAVE.Text))
             {
                 MessageBox.Show("Ingrese usuario y contraseña");
                 return;
@@ -46,34 +46,42 @@ namespace practica_conexion_DDBB
 
             string clave = TXTCLAVE.Text;
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            try
             {
-                conn.Open();
-
-                MySqlCommand cmd = new MySqlCommand(@"
-        SELECT NOMBRE_U, ID_ROL
-        FROM USUARIOS
-        WHERE ID_USUARIO = @id
-        AND CLAVE = @clave
-        AND ESTADO = 'ACTIVO'", conn);
-
-                cmd.Parameters.AddWithValue("@id", idUsuario);
-                cmd.Parameters.AddWithValue("@clave", clave);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    Sesion.Usuario = reader["NOMBRE_U"].ToString();
-                    Sesion.Rol = Convert.ToInt32(reader["ID_ROL"]);
+                    conn.Open();
 
-                    RedirigirPorRol();
-                    this.Hide();
+                    MySqlCommand cmd = new MySqlCommand(@"
+                SELECT NOMBRE_U, ID_ROL
+                FROM USUARIOS
+                WHERE ID_USUARIO = @id
+                AND CLAVE = @clave
+                AND ESTADO = 'ACTIVO'", conn);
+
+                    cmd.Parameters.AddWithValue("@id", idUsuario);
+                    cmd.Parameters.AddWithValue("@clave", clave);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            Sesion.Usuario = reader["NOMBRE_U"].ToString();
+                            Sesion.Rol = Convert.ToInt32(reader["ID_ROL"]);
+
+                            RedirigirPorRol();
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("ID o contraseña incorrectos");
+                        }
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("ID o contraseña incorrectos");
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error de conexión: " + ex.Message);
             }
         }
         private void RedirigirPorRol()

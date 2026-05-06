@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
@@ -16,176 +17,80 @@ namespace practica_conexion_DDBB
         .ConnectionStrings["CONEXION"]
         .ConnectionString;
 
-        public bool RegistrarVenta(
-            int codigoProducto,
-            int cliente,
-            int vendedor,
-            int cantidad)
+        public bool RegistrarVenta(int codigoProducto, int cliente, int vendedor, int cantidad)
         {
-            using (MySqlConnection conn =
-                new MySqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-
-                SqlTransaction tran =
-                conn.BeginTransaction();
+                MySqlTransaction tran = conn.BeginTransaction();
 
                 try
                 {
-                    decimal precio = 0;
+                    // Obtener precio
+                    decimal precio = Convert.ToDecimal(new MySqlCommand(
+                        "SELECT PRECIO FROM PRODUCTOS WHERE CODIGO=@CODIGO",
+                        conn, tran)
+                    {
+                        Parameters = { new MySqlParameter("@CODIGO", codigoProducto) }
+                    }.ExecuteScalar());
 
-                    // Buscar precio producto
+                    decimal subtotal = precio * cantidad;
+                    decimal iva = subtotal * 0.19m;
+                    decimal total = subtotal + iva;
 
-                    string sqlBuscar =
-                    @"SELECT PRECIO
-                      FROM PRODUCTOS
-                      WHERE CODIGO=@CODIGO";
+                    // Insertar factura
+                    new MySqlCommand(@"
+                INSERT INTO FACTURAS (FECHA, SUBTOTAL, IVA, VALOR, DETALLE, CLIENTE, VENDEDOR)
+                VALUES (NOW(), @SUBTOTAL, @IVA, @TOTAL, @DETALLE, @CLIENTE, @VENDEDOR)",
+                        conn, tran)
+                    {
+                        Parameters =
+                {
+                    new MySqlParameter("@SUBTOTAL", subtotal),
+                    new MySqlParameter("@IVA", iva),
+                    new MySqlParameter("@TOTAL", total),
+                    new MySqlParameter("@DETALLE", codigoProducto),
+                    new MySqlParameter("@CLIENTE", cliente),
+                    new MySqlParameter("@VENDEDOR", vendedor)
+                }
+                    }.ExecuteNonQuery();
 
-                    MySqlCommand cmdBuscar =
-                    new MySqlCommand
-                    (sqlBuscar, conn, tran);
+                    // Actualizar stock
+                    new MySqlCommand(@"
+                UPDATE PRODUCTOS 
+                SET STOCK = STOCK - @CANTIDAD 
+                WHERE CODIGO = @CODIGO",
+                        conn, tran)
+                    {
+                        Parameters =
+                {
+                    new MySqlParameter("@CANTIDAD", cantidad),
+                    new MySqlParameter("@CODIGO", codigoProducto)
+                }
+                    }.ExecuteNonQuery();
 
-                    cmdBuscar.Parameters.AddWithValue
-                    ("@CODIGO", codigoProducto);
-
-                    precio =
-                    Convert.ToDecimal
-                    (cmdBuscar.ExecuteScalar());
-
-
-                    decimal subtotal =
-                    precio * cantidad;
-
-                    decimal iva =
-                    subtotal * 0.19m;
-
-                    decimal total =
-                    subtotal + iva;
-
-
-
-                    // Guardar factura
-
-                    string sqlFactura = @"
-
-                    INSERT INTO FACTURAS
-                    (
-                      FECHA,
-                      SUBTOTAL,
-                      IVA,
-                      VALOR,
-                      DETALLE,
-                      CLIENTE,
-                      VENDEDOR
-                    )
-
-                    VALUES
-                    (
-                      GETDATE(),
-                      @SUBTOTAL,
-                      @IVA,
-                      @TOTAL,
-                      @DETALLE,
-                      @CLIENTE,
-                      @VENDEDOR
-                    )";
-
-                    MySqlCommand cmdFactura =
-                    new MySqlCommand
-                    (sqlFactura, conn, tran);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@SUBTOTAL", subtotal);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@IVA", iva);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@TOTAL", total);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@DETALLE", codigoProducto);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@CLIENTE", cliente);
-
-                    cmdFactura.Parameters.AddWithValue
-                    ("@VENDEDOR", vendedor);
-
-                    cmdFactura.ExecuteNonQuery();
-
-
-
-                    // Descontar stock
-
-                    string sqlStock = @"
-                    UPDATE PRODUCTOS
-                    SET STOCK=STOCK-@CANTIDAD
-                    WHERE CODIGO=@CODIGO";
-
-                    MySqlCommand cmdStock =
-                    new MySqlCommand
-                    (sqlStock, conn, tran);
-
-                    cmdStock.Parameters.AddWithValue
-                    ("@CANTIDAD", cantidad);
-
-                    cmdStock.Parameters.AddWithValue
-                    ("@CODIGO", codigoProducto);
-
-                    cmdStock.ExecuteNonQuery();
-
-
-
-                    // Registrar rotacion
-
-                    string sqlRotacion = @"
-
-                    INSERT INTO VENTA_ROTACION
-                    (
-                     ID_PRODUCTO,
-                     CANTIDAD,
-                     FECHA,
-                     ESTADO
-                    )
-
-                    VALUES
-                    (
-                     @CODIGO,
-                     @CANTIDAD,
-                     GETDATE(),
-                     'VENTA'
-                    )";
-
-                    MySqlCommand cmdRot =
-                    new MySqlCommand
-                    (sqlRotacion, conn, tran);
-
-                    cmdRot.Parameters.AddWithValue
-                    ("@CODIGO", codigoProducto);
-
-                    cmdRot.Parameters.AddWithValue
-                    ("@CANTIDAD", cantidad);
-
-                    cmdRot.ExecuteNonQuery();
-
+                    // Registrar rotación
+                    new MySqlCommand(@"
+                INSERT INTO VENTA_ROTACION (ID_PRODUCTO, CANTIDAD, FECHA, ESTADO)
+                VALUES (@CODIGO, @CANTIDAD, NOW(), 'VENTA')",
+                        conn, tran)
+                    {
+                        Parameters =
+                {
+                    new MySqlParameter("@CODIGO", codigoProducto),
+                    new MySqlParameter("@CANTIDAD", cantidad)
+                }
+                    }.ExecuteNonQuery();
 
                     tran.Commit();
-
                     return true;
                 }
-
                 catch
                 {
                     tran.Rollback();
-
                     return false;
                 }
-
             }
-
         }
-
     }
-
 }

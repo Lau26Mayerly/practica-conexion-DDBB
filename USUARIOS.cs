@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
@@ -27,7 +28,7 @@ namespace practica_conexion_DDBB
             string consulta = "select * from USUARIOS";
             using (MySqlConnection con = new MySqlConnection(cad_con))
             {
-                MyMySqlDataAdapter ad = new MyMySqlDataAdapter(consulta, con);
+                MySqlDataAdapter ad = new MySqlDataAdapter(consulta, con);
                 DataTable tab_User = new DataTable();
                 ad.Fill(tab_User);
                 DGVuser.DataSource = tab_User;
@@ -50,33 +51,32 @@ namespace practica_conexion_DDBB
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue(@"filtro","%"+filtro+"%");
-                    MyMySqlDataAdapter d = new MyMySqlDataAdapter(cmd);
+                    MySqlDataAdapter d = new MySqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     d.Fill(dt);
                     DGVuser.DataSource = dt;
                 }
             }
         }
-        //comentado
-        //private void CargarNombre(string filtro)
-        //{
+        private void CargarNombre(string filtro)
+        {
 
-        //    string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-        //    using (MySqlConnection conn = new MySqlConnection(cad_con))
-        //    {
-        //        string query = "select ID_USUARIO, NOMBRE_U, ID_ROL, CLAVE, ESTADO" +
-        //            "from USUARIOS" +
-        //            " WHERE  NOMBRE_U = @filtro";
-        //        using (MySqlCommand cmd = new MySqlCommand(query, conn))
-        //        {
-        //            cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
-        //            MyMySqlDataAdapter d = new MyMySqlDataAdapter(cmd);
-        //            DataTable dt = new DataTable();
-        //            d.Fill(dt);
-        //            DGVuser.DataSource = dt;
-        //        }
-        //    }
-        //}
+            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
+            using (MySqlConnection conn = new MySqlConnection(cad_con))
+            {
+                string query = "select ID_USUARIO, NOMBRE_U, ID_ROL, CLAVE, ESTADO" +
+                    "from USUARIOS" +
+                    " WHERE  NOMBRE_U = @filtro";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
+                    MySqlDataAdapter d = new MySqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    d.Fill(dt);
+                    DGVuser.DataSource = dt;
+                }
+            }
+        }
 
         private void txtID_USER_KeyDown(object sender, KeyEventArgs e)
         {

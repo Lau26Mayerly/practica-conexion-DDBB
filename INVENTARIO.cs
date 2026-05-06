@@ -258,6 +258,14 @@ namespace practica_conexion_DDBB
 
         private void BTNagregar_Click(object sender, EventArgs e)
         {
+            Crear_Producto crear_Producto = new Crear_Producto();
+            crear_Producto.Show();
+            this.Hide();
+
+        }
+
+        private void BTNhabili_Click(object sender, EventArgs e)
+        {
 
         }
     }
