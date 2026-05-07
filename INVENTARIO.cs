@@ -16,20 +16,20 @@ using MySql.Data.MySqlClient;
 
 namespace practica_conexion_DDBB
 {
+     
     public partial class INVENTARIO : Form
     {
         public INVENTARIO()
         {
             InitializeComponent();
         }
-
+        public string codigoSeleccionado = "";
         private void INVENTARIO_Load(object sender, EventArgs e)
         {
-
-            //string cad_con = "CONEXION";
             CargarDatos();
-            CargarCategoria();
+            DGV1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
+            DGV1.MultiSelect = false;
         }
         private void CargarDatos()
         {
@@ -53,196 +53,7 @@ namespace practica_conexion_DDBB
                 MessageBox.Show("Error al cargar el inventario: " + ex.Message);
             }
         }
-        private void CargarNombre(string filtro)
-        {
-            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
 
-            // MySQL usa CHAR para el casting
-            string query = @"SELECT CODIGO, NOMBRE_PRODUCTO, DESCRIPCION, PRECIO, STOCK, CATEGORIA, FECHA_INGRESO
-                     FROM PRODUCTOS
-                     WHERE 
-                         CAST(CODIGO AS CHAR) LIKE @filtro OR
-                         NOMBRE_PRODUCTO LIKE @filtro OR
-                         CATEGORIA LIKE @filtro";
-
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(cad_con))
-                {
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
-
-                        // CORRECCIÓN: MySqlDataAdapter
-                        using (MySqlDataAdapter da = new MySqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            DGV1.DataSource = dt;
-
-                            foreach (DataRow row in dt.Rows)
-                            {
-                                // Aseguramos que el stock no sea nulo antes de convertir
-                                if (row["STOCK"] != DBNull.Value)
-                                {
-                                    int stock = Convert.ToInt32(row["STOCK"]);
-                                    string nombreP = row["NOMBRE_PRODUCTO"].ToString();
-
-                                    if (stock <= 5)
-                                    {
-                                        MessageBox.Show($"Advertencia: {nombreP} se está agotando (Stock: {stock}).",
-                                            "STOCK LIMITADO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al filtrar datos: " + ex.Message);
-            }
-        }
-        private void CargarCodigo(string filtro)
-        {
-            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-
-            // CORRECCIÓN: MySQL usa CHAR para el CAST
-            string query = @"SELECT CODIGO, NOMBRE_PRODUCTO, DESCRIPCION, PRECIO, STOCK, CATEGORIA, FECHA_INGRESO
-                     FROM PRODUCTOS
-                     WHERE 
-                         CAST(CODIGO AS CHAR) LIKE @filtro";
-
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(cad_con))
-                {
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
-
-                        // CORRECCIÓN: Nombre correcto MySqlDataAdapter
-                        using (MySqlDataAdapter da = new MySqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            DGV1.DataSource = dt;
-
-                            foreach (DataRow row in dt.Rows)
-                            {
-                                if (row["STOCK"] != DBNull.Value)
-                                {
-                                    int stock = Convert.ToInt32(row["STOCK"]);
-                                    string nombreP = row["NOMBRE_PRODUCTO"].ToString();
-
-                                    if (stock <= 5)
-                                    {
-                                        MessageBox.Show($"Advertencia: {nombreP} tiene stock bajo ({stock}).",
-                                            "STOCK LIMITADO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al buscar por código: " + ex.Message);
-            }
-        }
-
-        private void CargarCategoria()
-        {
-            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-
-            using (MySqlConnection conn = new MySqlConnection(cad_con))
-            {
-                string query = "SELECT DISTINCT CATEGORIA FROM PRODUCTOS ORDER BY CATEGORIA";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    try
-                    {
-                        conn.Open();
-                        // CAMBIO CLAVE: Cambiar SqlDataReader por MySqlDataReader
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            cmbCategoria.Items.Clear();
-                            while (reader.Read())
-                            {
-                                cmbCategoria.Items.Add(reader["CATEGORIA"].ToString());
-                            }
-                        }
-                        // El conn.Close() no es estrictamente necesario aquí porque el 'using' lo hace solo
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error al cargar categorías: " + ex.Message);
-                    }
-                }
-            }
-        }
-
-        private void CargarCat()
-        {
-            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
-            using (MySqlConnection con =new MySqlConnection (cad_con))
-            {
-                string query = @"select CODIGO, NOMBRE_PRODUCTO, DESCRIPCION, PRECIO, STOCK, CATEGORIA, FECHA_INGRESO
-                              from PRODUCTOS
-                              where CATEGORIA =@CATEGORIA
-                              ORDER BY CATEGORIA";
-                using (MySqlCommand cmd =new MySqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@CATEGORIA", cmbCategoria.SelectedItem.ToString());
-                    MySqlDataAdapter d = new MySqlDataAdapter(cmd); 
-                    DataTable dt = new DataTable();
-                    d.Fill(dt);
-                    DGV1 .DataSource = dt;
-                    foreach (DataRow row in dt.Rows)
-                    {
-                        int Stock= Convert.ToInt32(row["STOCK"]);
-                        string Nombre_p = row["NOMBRE_PRODUCTO"].ToString();
-                        if (Stock <= 5 ) 
-                        {
-                            MessageBox.Show($"Advertencia: "+ Nombre_p +" se esta agotando, ¿Deseas enviar alerta?","STOCK LIMITADO", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                        }
-                    }
-                   
-                }
-            }
-        }
-        private void txtCategoria_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-                CargarCategoria();
-            }
-        }
-        private void txtNombre_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true; 
-                CargarNombre(txtNombre.Text.Trim());
-            }
-        }
-        private void txtCodigo_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-                CargarCodigo(txtCodigo.Text.Trim());
-            }
-        }
-        private void cmbCategoria_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string CATEGORIA =cmbCategoria.SelectedItem.ToString();
-            CargarCat();
-        }
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -266,7 +77,99 @@ namespace practica_conexion_DDBB
 
         private void BTNhabili_Click(object sender, EventArgs e)
         {
+            ActualizarEstadoBD(1);
+        }
 
+        private void BTNinhab_Click(object sender, EventArgs e)
+        {
+            ActualizarEstadoBD(0);
+        }
+        private void CargarNombre(string filtro)
+        {
+            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
+
+            string query = @"SELECT CODIGO, NOMBRE_PRODUCTO, DESCRIPCION, PRECIO, STOCK, CATEGORIA, FECHA_INGRESO
+                     FROM PRODUCTOS
+                     WHERE 
+                         CAST(CODIGO AS CHAR) LIKE @filtro OR
+                         NOMBRE_PRODUCTO LIKE @filtro OR
+                         CATEGORIA LIKE @filtro";
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(cad_con))
+                {
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
+
+                        MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+                        DGV1.DataSource = dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al filtrar: " + ex.Message);
+            }
+        }
+        private void TXTbuscar_TextChanged(object sender, EventArgs e)
+        {
+            CargarNombre(TXTbuscar.Text);
+        }
+
+        private void DGV1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                codigoSeleccionado = DGV1.Rows[e.RowIndex].Cells["CODIGO"].Value.ToString();
+            }
+        }
+      
+        private void ActualizarEstadoBD(int nuevoEstado)
+        {
+            if (DGV1.CurrentRow == null || DGV1.CurrentRow.Index < 0)
+            {
+                MessageBox.Show("Por favor, selecciona un producto de la lista primero.");
+                return;
+            }
+
+            string codigoProd = DGV1.CurrentRow.Cells["CODIGO"].Value.ToString();
+            if (DGV1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Por favor, seleccione una fila completa en la tabla.");
+                return;
+            }
+            string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
+            string query = "UPDATE PRODUCTOS SET ESTADO = @estado WHERE CODIGO = @codigo";
+
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(cad_con))
+                {
+                    con.Open();
+                    using (MySqlCommand cmd = new MySqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@estado", nuevoEstado);
+                        cmd.Parameters.AddWithValue("@codigo", codigoProd);
+
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+
+                        if (filasAfectadas > 0)
+                        {
+                            string mensaje = (nuevoEstado == 1) ? "Producto Habilitado" : "Producto Inhabilitado";
+                            MessageBox.Show(mensaje + " correctamente en la base de datos.");
+                            CargarDatos();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al actualizar la base de datos: " + ex.Message);
+            }
         }
     }
 }

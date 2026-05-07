@@ -58,7 +58,7 @@ namespace practica_conexion_DDBB
                 FROM USUARIOS
                 WHERE ID_USUARIO = @id
                 AND CLAVE = @clave
-                AND ESTADO = 'ACTIVO'", conn);
+                AND ESTADO = 'activo'", conn);
 
                     cmd.Parameters.AddWithValue("@id", idUsuario);
                     cmd.Parameters.AddWithValue("@clave", clave);

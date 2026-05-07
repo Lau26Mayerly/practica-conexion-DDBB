@@ -200,7 +200,8 @@ namespace practica_conexion_DDBB
                 query = @"
             SELECT CODIGO, NOMBRE_PRODUCTO
             FROM PRODUCTOS
-            WHERE CAST(CODIGO AS CHAR) LIKE @valor";
+            WHERE CAST(CODIGO AS CHAR) LIKE @valor
+                AND ESTADO = 1";
             }
             else
             {
