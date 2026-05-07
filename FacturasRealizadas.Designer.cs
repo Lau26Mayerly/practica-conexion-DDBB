@@ -33,6 +33,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.DGVdetalle = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
+            this.LBnumeroFact = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGVfacturas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DGVdetalle)).BeginInit();
             this.SuspendLayout();
@@ -45,7 +46,6 @@
             this.DGVfacturas.Size = new System.Drawing.Size(665, 454);
             this.DGVfacturas.TabIndex = 0;
             this.DGVfacturas.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVfacturas_CellClick);
-            this.DGVfacturas.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVfacturas_CellContentClick);
             // 
             // label6
             // 
@@ -88,12 +88,24 @@
             this.label1.TabIndex = 30;
             this.label1.Text = "Detalle";
             // 
+            // LBnumeroFact
+            // 
+            this.LBnumeroFact.AutoSize = true;
+            this.LBnumeroFact.Font = new System.Drawing.Font("Ink Free", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LBnumeroFact.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.LBnumeroFact.Location = new System.Drawing.Point(946, 50);
+            this.LBnumeroFact.Name = "LBnumeroFact";
+            this.LBnumeroFact.Size = new System.Drawing.Size(76, 60);
+            this.LBnumeroFact.TabIndex = 31;
+            this.LBnumeroFact.Text = "---";
+            // 
             // FacturasRealizadas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(1397, 602);
+            this.Controls.Add(this.LBnumeroFact);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DGVdetalle);
             this.Controls.Add(this.label2);
@@ -116,5 +128,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridView DGVdetalle;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label LBnumeroFact;
     }
 }

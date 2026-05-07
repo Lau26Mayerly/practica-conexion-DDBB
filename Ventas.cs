@@ -273,7 +273,6 @@ namespace practica_conexion_DDBB
                 MessageBox.Show("No hay productos en la venta.");
                 return;
             }
-            int id = 0;
             decimal subtotal = 0;
 
             foreach (DataGridViewRow fila in DGVventas.Rows)
@@ -294,9 +293,9 @@ namespace practica_conexion_DDBB
                     conn.Open();
                     string query = @"
     INSERT INTO FACTURAS 
-    (FECHA, SUBTOTAL, IVA, VALOR, CLIENTE, VENDEDOR) 
+    (FECHA, CLIENTE, SUBTOTAL, IVA, VALOR, VENDEDOR) 
     VALUES 
-    (NOW(), @SUBTOTAL, @IVA, @TOTAL, @CLIENTE, @VENDEDOR)";
+    (NOW(),@CLIENTE, @SUBTOTAL, @IVA, @TOTAL, @VENDEDOR)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
 
