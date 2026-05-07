@@ -31,7 +31,10 @@
             this.DGVfacturas = new System.Windows.Forms.DataGridView();
             this.label6 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.DGVdetalle = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGVfacturas)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DGVdetalle)).BeginInit();
             this.SuspendLayout();
             // 
             // DGVfacturas
@@ -39,8 +42,9 @@
             this.DGVfacturas.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGVfacturas.Location = new System.Drawing.Point(25, 113);
             this.DGVfacturas.Name = "DGVfacturas";
-            this.DGVfacturas.Size = new System.Drawing.Size(737, 293);
+            this.DGVfacturas.Size = new System.Drawing.Size(665, 454);
             this.DGVfacturas.TabIndex = 0;
+            this.DGVfacturas.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVfacturas_CellClick);
             this.DGVfacturas.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVfacturas_CellContentClick);
             // 
             // label6
@@ -48,7 +52,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Ink Free", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label6.Location = new System.Drawing.Point(288, 30);
+            this.label6.Location = new System.Drawing.Point(31, 50);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(218, 60);
             this.label6.TabIndex = 27;
@@ -65,12 +69,33 @@
             this.label2.Text = "b";
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
+            // DGVdetalle
+            // 
+            this.DGVdetalle.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DGVdetalle.Location = new System.Drawing.Point(720, 113);
+            this.DGVdetalle.Name = "DGVdetalle";
+            this.DGVdetalle.Size = new System.Drawing.Size(665, 454);
+            this.DGVdetalle.TabIndex = 29;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Ink Free", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Location = new System.Drawing.Point(722, 50);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(176, 60);
+            this.label1.TabIndex = 30;
+            this.label1.Text = "Detalle";
+            // 
             // FacturasRealizadas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1397, 602);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.DGVdetalle);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.DGVfacturas);
@@ -78,6 +103,7 @@
             this.Text = "FacturasRealizadas";
             this.Load += new System.EventHandler(this.FacturasRealizadas_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DGVfacturas)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DGVdetalle)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -88,5 +114,7 @@
         private System.Windows.Forms.DataGridView DGVfacturas;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DataGridView DGVdetalle;
+        private System.Windows.Forms.Label label1;
     }
 }

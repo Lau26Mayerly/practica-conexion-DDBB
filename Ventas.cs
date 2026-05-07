@@ -11,6 +11,10 @@ using System.Data.SqlClient;
 using System.Configuration;
 using MySql.Data.MySqlClient;
 using static practica_conexion_DDBB.Form1;
+using Google.Protobuf.WellKnownTypes;
+using Mysqlx.Crud;
+using Mysqlx.Cursor;
+using MySqlX.XDevAPI;
 
 namespace practica_conexion_DDBB
 {
@@ -33,7 +37,6 @@ namespace practica_conexion_DDBB
             TXTCODIGO.TextChanged += TextBoxBusqueda_TextChanged;
             TXTCATEGORIA.TextChanged += TextBoxBusqueda_TextChanged;
 
-            // 🔥 ESTA LÍNEA ES LA QUE TE FALTA
             TXT_NIT_CLIENTE.KeyDown += TXT_NIT_CLIENTE_KeyDown;
         }
         int ObtenerStock(string codigo)
@@ -194,7 +197,6 @@ namespace practica_conexion_DDBB
 
             if (campo == "CODIGO")
             {
-                // En MySQL se usa CHAR en lugar de VARCHAR para el CAST
                 query = @"
             SELECT CODIGO, NOMBRE_PRODUCTO
             FROM PRODUCTOS
@@ -202,7 +204,6 @@ namespace practica_conexion_DDBB
             }
             else
             {
-                // Nota: Asegúrate de que 'campo' no venga de un input directo del usuario para evitar SQL Injection
                 query = $@"
             SELECT CODIGO, NOMBRE_PRODUCTO
             FROM PRODUCTOS
@@ -257,9 +258,9 @@ namespace practica_conexion_DDBB
             // BOTON EN EL DATAGRID VIEW PARA ELIMINAR
             DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
 
-            btn.Name = "Eliminar";              // nombre interno
-            btn.HeaderText = "Eliminar";        // texto arriba de la columna
-            btn.Text = "X";                     // lo que aparece en cada botón
+            btn.Name = "Eliminar";              
+            btn.HeaderText = "Eliminar";        
+            btn.Text = "X";                     
             btn.UseColumnTextForButtonValue = true;
             DGVventas.Columns.Add(btn);
         }
@@ -272,7 +273,7 @@ namespace practica_conexion_DDBB
                 MessageBox.Show("No hay productos en la venta.");
                 return;
             }
-
+            int id = 0;
             decimal subtotal = 0;
 
             foreach (DataGridViewRow fila in DGVventas.Rows)
@@ -282,48 +283,82 @@ namespace practica_conexion_DDBB
 
             decimal iva = subtotal * 0.19m;
             decimal total = subtotal + iva;
+            
 
             long cliente = long.Parse(TXT_NIT_CLIENTE.Text);
             int vendedor = Sesion.IdUsuario;
-
-            List<string> codigos = new List<string>();
-
-            foreach (DataGridViewRow fila in DGVventas.Rows)
-            {
-                if (fila.Cells["Codigo"].Value != null)
-                {
-                    codigos.Add(fila.Cells["Codigo"].Value.ToString());
-                }
-            }
-
-            string detalle = string.Join(",", codigos);
-
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
-
                     string query = @"
-            INSERT INTO FACTURAS
-            (FECHA, SUBTOTAL, IVA, VALOR, DETALLE, CLIENTE, VENDEDOR)
-            VALUES
-            (NOW(), @SUBTOTAL, @IVA, @TOTAL, @DETALLE, @CLIENTE, @VENDEDOR)";
+    INSERT INTO FACTURAS 
+    (FECHA, SUBTOTAL, IVA, VALOR, CLIENTE, VENDEDOR) 
+    VALUES 
+    (NOW(), @SUBTOTAL, @IVA, @TOTAL, @CLIENTE, @VENDEDOR)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
 
+                    // 3. No necesitas cmd.Parameters.AddWithValue("ID_VENTA", id); ¡Bórralo!
                     cmd.Parameters.AddWithValue("@SUBTOTAL", subtotal);
                     cmd.Parameters.AddWithValue("@IVA", iva);
                     cmd.Parameters.AddWithValue("@TOTAL", total);
-                    cmd.Parameters.AddWithValue("@DETALLE", detalle);
                     cmd.Parameters.AddWithValue("@CLIENTE", cliente);
                     cmd.Parameters.AddWithValue("@VENDEDOR", vendedor);
 
                     int filas = cmd.ExecuteNonQuery();
+                    long idVenta = cmd.LastInsertedId;
 
                     if (filas > 0)
                     {
+                        foreach (DataGridViewRow fila in DGVventas.Rows)
+                        {
+                            string codigo =
+                                fila.Cells["Codigo"].Value.ToString();
+
+                            int cantidad = Convert.ToInt32(
+                                fila.Cells["Cantidad"].Value
+                            );
+
+                            decimal precio = Convert.ToDecimal(
+                                fila.Cells["Precio"].Value
+                            );
+
+                            string detalleQuery = @"
+        INSERT INTO DETALLE_FACTURA
+        (ID_VENTA, CODIGO_PRODUCTO, CANTIDAD, PRECIO)
+        VALUES
+        (@IDVENTA, @CODIGO, @CANTIDAD, @PRECIO)";
+
+                            MySqlCommand detalleCmd =
+                                new MySqlCommand(detalleQuery, conn);
+
+                            detalleCmd.Parameters.AddWithValue(
+                                "@IDVENTA",
+                                idVenta
+                            );
+
+                            detalleCmd.Parameters.AddWithValue(
+                                "@CODIGO",
+                                codigo
+                            );
+
+                            detalleCmd.Parameters.AddWithValue(
+                                "@CANTIDAD",
+                                cantidad
+                            );
+
+                            detalleCmd.Parameters.AddWithValue(
+                                "@PRECIO",
+                                precio
+                            );
+
+                            detalleCmd.ExecuteNonQuery();
+                        }
+
                         MessageBox.Show("Venta registrada correctamente");
+
                         DGVventas.Rows.Clear();
                     }
                 }
