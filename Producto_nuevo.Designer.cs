@@ -31,20 +31,20 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.TXT_Tel = new System.Windows.Forms.TextBox();
-            this.txt_Dir = new System.Windows.Forms.TextBox();
+            this.TXT_precio = new System.Windows.Forms.TextBox();
+            this.txt_Descrip = new System.Windows.Forms.TextBox();
             this.TXT_Nombre = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.TXT_CC = new System.Windows.Forms.TextBox();
+            this.TXT_Codigo = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.TXTstock = new System.Windows.Forms.TextBox();
+            this.DTP1 = new System.Windows.Forms.DateTimePicker();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.CMBestado = new System.Windows.Forms.ComboBox();
+            this.CMBcateg = new System.Windows.Forms.ComboBox();
             this.BTNGUARDAR = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -82,21 +82,21 @@
             this.label4.Text = "Descripción";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
-            // TXT_Tel
+            // TXT_precio
             // 
-            this.TXT_Tel.Location = new System.Drawing.Point(160, 213);
-            this.TXT_Tel.Name = "TXT_Tel";
-            this.TXT_Tel.Size = new System.Drawing.Size(180, 20);
-            this.TXT_Tel.TabIndex = 35;
-            this.TXT_Tel.TextChanged += new System.EventHandler(this.TXT_Tel_TextChanged);
+            this.TXT_precio.Location = new System.Drawing.Point(160, 213);
+            this.TXT_precio.Name = "TXT_precio";
+            this.TXT_precio.Size = new System.Drawing.Size(180, 20);
+            this.TXT_precio.TabIndex = 35;
+            this.TXT_precio.TextChanged += new System.EventHandler(this.TXT_Tel_TextChanged);
             // 
-            // txt_Dir
+            // txt_Descrip
             // 
-            this.txt_Dir.Location = new System.Drawing.Point(160, 172);
-            this.txt_Dir.Name = "txt_Dir";
-            this.txt_Dir.Size = new System.Drawing.Size(180, 20);
-            this.txt_Dir.TabIndex = 34;
-            this.txt_Dir.TextChanged += new System.EventHandler(this.txt_Dir_TextChanged);
+            this.txt_Descrip.Location = new System.Drawing.Point(160, 172);
+            this.txt_Descrip.Name = "txt_Descrip";
+            this.txt_Descrip.Size = new System.Drawing.Size(180, 20);
+            this.txt_Descrip.TabIndex = 34;
+            this.txt_Descrip.TextChanged += new System.EventHandler(this.txt_Dir_TextChanged);
             // 
             // TXT_Nombre
             // 
@@ -128,13 +128,13 @@
             this.label2.Text = "CODIGO";
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
-            // TXT_CC
+            // TXT_Codigo
             // 
-            this.TXT_CC.Location = new System.Drawing.Point(160, 93);
-            this.TXT_CC.Name = "TXT_CC";
-            this.TXT_CC.Size = new System.Drawing.Size(180, 20);
-            this.TXT_CC.TabIndex = 30;
-            this.TXT_CC.TextChanged += new System.EventHandler(this.TXT_CC_TextChanged);
+            this.TXT_Codigo.Location = new System.Drawing.Point(160, 93);
+            this.TXT_Codigo.Name = "TXT_Codigo";
+            this.TXT_Codigo.Size = new System.Drawing.Size(180, 20);
+            this.TXT_Codigo.TabIndex = 30;
+            this.TXT_Codigo.TextChanged += new System.EventHandler(this.TXT_CC_TextChanged);
             // 
             // label8
             // 
@@ -156,19 +156,19 @@
             this.label9.TabIndex = 39;
             this.label9.Text = "Cantidad";
             // 
-            // textBox4
+            // TXTstock
             // 
-            this.textBox4.Location = new System.Drawing.Point(491, 134);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(180, 20);
-            this.textBox4.TabIndex = 38;
+            this.TXTstock.Location = new System.Drawing.Point(491, 134);
+            this.TXTstock.Name = "TXTstock";
+            this.TXTstock.Size = new System.Drawing.Size(180, 20);
+            this.TXTstock.TabIndex = 38;
             // 
-            // dateTimePicker1
+            // DTP1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(491, 90);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(180, 20);
-            this.dateTimePicker1.TabIndex = 42;
+            this.DTP1.Location = new System.Drawing.Point(491, 90);
+            this.DTP1.Name = "DTP1";
+            this.DTP1.Size = new System.Drawing.Size(180, 20);
+            this.DTP1.TabIndex = 42;
             // 
             // label6
             // 
@@ -190,21 +190,21 @@
             this.label7.TabIndex = 44;
             this.label7.Text = "Estado";
             // 
-            // comboBox1
+            // CMBestado
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(491, 215);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(180, 21);
-            this.comboBox1.TabIndex = 46;
+            this.CMBestado.FormattingEnabled = true;
+            this.CMBestado.Location = new System.Drawing.Point(491, 215);
+            this.CMBestado.Name = "CMBestado";
+            this.CMBestado.Size = new System.Drawing.Size(180, 21);
+            this.CMBestado.TabIndex = 46;
             // 
-            // comboBox2
+            // CMBcateg
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(491, 178);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(180, 21);
-            this.comboBox2.TabIndex = 47;
+            this.CMBcateg.FormattingEnabled = true;
+            this.CMBcateg.Location = new System.Drawing.Point(491, 178);
+            this.CMBcateg.Name = "CMBcateg";
+            this.CMBcateg.Size = new System.Drawing.Size(180, 21);
+            this.CMBcateg.TabIndex = 47;
             // 
             // BTNGUARDAR
             // 
@@ -216,6 +216,7 @@
             this.BTNGUARDAR.TabIndex = 48;
             this.BTNGUARDAR.Text = "Guardar Cambios";
             this.BTNGUARDAR.UseVisualStyleBackColor = false;
+            this.BTNGUARDAR.Click += new System.EventHandler(this.BTNGUARDAR_Click);
             // 
             // Producto_nuevo
             // 
@@ -224,22 +225,22 @@
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.BTNGUARDAR);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.CMBcateg);
+            this.Controls.Add(this.CMBestado);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.DTP1);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.TXTstock);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.TXT_Tel);
-            this.Controls.Add(this.txt_Dir);
+            this.Controls.Add(this.TXT_precio);
+            this.Controls.Add(this.txt_Descrip);
             this.Controls.Add(this.TXT_Nombre);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.TXT_CC);
+            this.Controls.Add(this.TXT_Codigo);
             this.Controls.Add(this.label5);
             this.Name = "Producto_nuevo";
             this.Text = "Producto_nuevo";
@@ -253,20 +254,20 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox TXT_Tel;
-        private System.Windows.Forms.TextBox txt_Dir;
+        private System.Windows.Forms.TextBox TXT_precio;
+        private System.Windows.Forms.TextBox txt_Descrip;
         private System.Windows.Forms.TextBox TXT_Nombre;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox TXT_CC;
+        private System.Windows.Forms.TextBox TXT_Codigo;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.TextBox TXTstock;
+        private System.Windows.Forms.DateTimePicker DTP1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox CMBestado;
+        private System.Windows.Forms.ComboBox CMBcateg;
         private System.Windows.Forms.Button BTNGUARDAR;
     }
 }
