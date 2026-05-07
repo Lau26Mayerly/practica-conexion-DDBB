@@ -105,11 +105,11 @@
             // 
             this.BTNagregar.BackColor = System.Drawing.Color.YellowGreen;
             this.BTNagregar.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BTNagregar.Location = new System.Drawing.Point(133, 367);
+            this.BTNagregar.Location = new System.Drawing.Point(624, 367);
             this.BTNagregar.Name = "BTNagregar";
-            this.BTNagregar.Size = new System.Drawing.Size(116, 42);
+            this.BTNagregar.Size = new System.Drawing.Size(170, 42);
             this.BTNagregar.TabIndex = 11;
-            this.BTNagregar.Text = "Agregar";
+            this.BTNagregar.Text = "Nuevo producto";
             this.BTNagregar.UseVisualStyleBackColor = false;
             this.BTNagregar.Click += new System.EventHandler(this.BTNagregar_Click);
             // 
@@ -117,7 +117,7 @@
             // 
             this.BTNinhab.BackColor = System.Drawing.Color.YellowGreen;
             this.BTNinhab.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BTNinhab.Location = new System.Drawing.Point(323, 367);
+            this.BTNinhab.Location = new System.Drawing.Point(133, 367);
             this.BTNinhab.Name = "BTNinhab";
             this.BTNinhab.Size = new System.Drawing.Size(138, 42);
             this.BTNinhab.TabIndex = 12;
@@ -129,7 +129,7 @@
             // 
             this.BTNmodif.BackColor = System.Drawing.Color.YellowGreen;
             this.BTNmodif.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BTNmodif.Location = new System.Drawing.Point(693, 367);
+            this.BTNmodif.Location = new System.Drawing.Point(476, 367);
             this.BTNmodif.Name = "BTNmodif";
             this.BTNmodif.Size = new System.Drawing.Size(116, 42);
             this.BTNmodif.TabIndex = 13;
@@ -152,7 +152,7 @@
             // 
             this.BTNhabili.BackColor = System.Drawing.Color.YellowGreen;
             this.BTNhabili.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BTNhabili.Location = new System.Drawing.Point(519, 367);
+            this.BTNhabili.Location = new System.Drawing.Point(307, 367);
             this.BTNhabili.Name = "BTNhabili";
             this.BTNhabili.Size = new System.Drawing.Size(116, 42);
             this.BTNhabili.TabIndex = 20;
