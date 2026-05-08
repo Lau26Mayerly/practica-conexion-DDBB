@@ -146,7 +146,7 @@ namespace practica_conexion_DDBB
             DataTable datos = ObtenerDatosFacturaCompleta(idVenta);
             if (datos.Rows.Count == 0) return;
 
-            DataRow fila = datos.Rows[0]; 
+            DataRow fila = datos.Rows[0];
             double totalFactura = Convert.ToDouble(fila["TOTAL_FACTURA"]);
             double subtotalGlobal = totalFactura / 1.19;
             double ivaGlobal = totalFactura - subtotalGlobal;
@@ -168,10 +168,10 @@ namespace practica_conexion_DDBB
             html.Append($"<p><b>No. Factura:</b> {idVenta} &nbsp;&nbsp;&nbsp; <b>Fecha:</b> {fila["FECHA"]}</p>");
             html.Append("<hr>");
             html.Append($"<p><b>CLIENTE:</b> {fila["NOMBRE_CLIENTE"]}<br><b>CC:</b> {fila["CC"]}</p>");
-          
+
             html.Append($"<p><b>VENDEDOR:</b> {fila["NOMBRE_VENDEDOR"]}<br><b>ID:</b> {fila["ID_USUARIO"]}</p>");
             html.Append("</div>");
-            
+
             html.Append("<table><tr><th>Producto</th><th>Cant.</th><th>Subtotal</th><th>IVA (19%)</th><th>Total</th></tr>");
 
             foreach (DataRow row in datos.Rows)
@@ -192,14 +192,39 @@ namespace practica_conexion_DDBB
 
             // BLOQUE DE TOTALES FINAL
             html.Append("<div class='totales-box'>");
+            // Usamos los nombres que definiste al principio del botón
             html.Append($"<div><span>Subtotal:</span> <span>${subtotalGlobal:N2}</span></div>");
             html.Append($"<div><span>IVA (19%):</span> <span>${ivaGlobal:N2}</span></div>");
-            html.Append($"<div style='font-weight:bold; border-top:1px solid #333;'><span>TOTAL:</span> <span>${totalFactura:N2}</span></div>");
+            html.Append($"<div style='font-weight:bold; border-top:2px solid #333;'><span>TOTAL:</span> <span>${totalFactura:N2}</span></div>");
             html.Append("</div>");
 
-            html.Append("</body></html>");
+            // --- GENERACIÓN DEL QR ---
+            try
+            {
+                using (QRCoder.QRCodeGenerator qrGenerator = new QRCoder.QRCodeGenerator())
+                {
+                    // Usamos totalFactura aquí también
+                    string qrData = $"Factura:{idVenta}|Total:{totalFactura}|Fecha:{fila["FECHA"]}";
 
-            // 4. Mostrar en el visor
+                    QRCoder.QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrData, QRCoder.QRCodeGenerator.ECCLevel.Q);
+                    using (QRCoder.PngByteQRCode qrCode = new QRCoder.PngByteQRCode(qrCodeData))
+                    {
+                        byte[] qrCodeAsPngByteArr = qrCode.GetGraphic(20);
+                        string base64QR = Convert.ToBase64String(qrCodeAsPngByteArr);
+
+                        html.Append("<div style='text-align:center; margin-top:50px; clear:both;'>");
+                        html.Append($"<img src='data:image/png;base64,{base64QR}' width='140' height='140'/><br>");
+                        html.Append("<span style='font-size:10px;'>Representación Gráfica de Factura Electrónica</span>");
+                        html.Append("</div>");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                html.Append($"<p style='color:red;'>Error QR: {ex.Message}</p>");
+            }
+
+            html.Append("</body></html>");
             Imprimir_Factura visor = new Imprimir_Factura();
             visor.webBrowser1.DocumentText = html.ToString();
             visor.ShowDialog();
