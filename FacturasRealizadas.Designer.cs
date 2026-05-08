@@ -34,6 +34,8 @@
             this.DGVdetalle = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.LBnumeroFact = new System.Windows.Forms.Label();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.BTNagregar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGVfacturas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DGVdetalle)).BeginInit();
             this.SuspendLayout();
@@ -99,12 +101,34 @@
             this.LBnumeroFact.TabIndex = 31;
             this.LBnumeroFact.Text = "---";
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(1404, 25);
+            this.toolStrip1.TabIndex = 32;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // BTNagregar
+            // 
+            this.BTNagregar.BackColor = System.Drawing.Color.YellowGreen;
+            this.BTNagregar.Font = new System.Drawing.Font("Ink Free", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BTNagregar.Location = new System.Drawing.Point(606, 573);
+            this.BTNagregar.Name = "BTNagregar";
+            this.BTNagregar.Size = new System.Drawing.Size(160, 42);
+            this.BTNagregar.TabIndex = 33;
+            this.BTNagregar.Text = "Vista previa";
+            this.BTNagregar.UseVisualStyleBackColor = false;
+            this.BTNagregar.Click += new System.EventHandler(this.BTNagregar_Click);
+            // 
             // FacturasRealizadas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1397, 602);
+            this.ClientSize = new System.Drawing.Size(1404, 706);
+            this.Controls.Add(this.BTNagregar);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.LBnumeroFact);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DGVdetalle);
@@ -129,5 +153,7 @@
         private System.Windows.Forms.DataGridView DGVdetalle;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label LBnumeroFact;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.Button BTNagregar;
     }
 }

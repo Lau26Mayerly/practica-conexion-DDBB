@@ -69,7 +69,7 @@ namespace practica_conexion_DDBB
 
             string cad_con = ConfigurationManager.ConnectionStrings["CONEXION"].ConnectionString;
 
-            // 2. Query con la columna ESTADO incluida como 1 (Activo)
+            
             string query = @"INSERT INTO PRODUCTOS 
                      (CODIGO, NOMBRE_PRODUCTO, DESCRIPCION, PRECIO, STOCK, CATEGORIA, FECHA_INGRESO, ESTADO) 
                      VALUES 
